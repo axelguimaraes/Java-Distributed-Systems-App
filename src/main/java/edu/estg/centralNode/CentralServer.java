@@ -8,14 +8,14 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+public class CentralServer {
     private final ServerSocket serverSocket;
     private final DatagramSocket datagramSocket;
 
     private final ArrayListSync<ClientHandler> clientHandlers;
     private final Gson jsonHelper;
 
-    public Server(ServerSocket serverSocket, DatagramSocket datagramSocket) {
+    public CentralServer(ServerSocket serverSocket, DatagramSocket datagramSocket) {
         this.clientHandlers = new ArrayListSync<>();
         this.jsonHelper = new Gson();
         this.serverSocket = serverSocket;
@@ -46,7 +46,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
         DatagramSocket datagramSocket = new DatagramSocket(4445);
-        Server server = new Server(new ServerSocket(2048), datagramSocket);
-        server.startServer();
+        CentralServer centralServer = new CentralServer(new ServerSocket(2048), datagramSocket);
+        centralServer.startServer();
     }
 }

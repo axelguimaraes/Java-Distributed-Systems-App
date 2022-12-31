@@ -14,11 +14,11 @@ public class Protocol {
     private final Gson jsonHelper;
     private final ArrayListSync<ClientHandler> clientHandlers;
     private final ClientHandler clientHandler;
-    private Server server;
+    private CentralServer centralServer;
 
-    public Protocol(ClientHandler clientHandler, ArrayListSync<ClientHandler> clientHandlers, Server server) throws IOException {
+    public Protocol(ClientHandler clientHandler, ArrayListSync<ClientHandler> clientHandlers, CentralServer centralServer) throws IOException {
         this.clientHandler = clientHandler;
-        this.server = server;
+        this.centralServer = centralServer;
         this.clientHandlers = clientHandlers;
         this.jsonHelper = new Gson();
         this.jsonFileHelper = new JsonFileHelper("files/");

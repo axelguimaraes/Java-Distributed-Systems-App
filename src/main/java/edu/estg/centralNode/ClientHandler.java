@@ -11,15 +11,15 @@ public class ClientHandler implements Runnable {
     private BufferedWriter bufferedWriter;
     private Protocol protocol;
     private ArrayListSync<ClientHandler> clientHandlers;
-    private Server server;
+    private CentralServer centralServer;
     private String localNodeUsername;
 
-    public ClientHandler(ArrayListSync<ClientHandler> clientHandlers, Socket socket, Server server) {
+    public ClientHandler(ArrayListSync<ClientHandler> clientHandlers, Socket socket, CentralServer centralServer) {
         try {
             this.socket = socket;
-            this.server = server;
+            this.centralServer = centralServer;
             this.clientHandlers = clientHandlers;
-            this.protocol = new Protocol(this, clientHandlers, server);
+            this.protocol = new Protocol(this, clientHandlers, centralServer);
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.clientHandlers.add(this);
