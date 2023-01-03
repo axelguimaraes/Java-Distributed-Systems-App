@@ -96,7 +96,7 @@ public class StartFrame extends JFrame {
                 LocalNodeLogin localNodeLogin = this.jsonHelper.<Response<LocalNodeLogin>>fromJson(message, new TypeToken<Response<LocalNodeLogin>>() {
                 }.getType()).getData();
 
-                this.menuForm = new MenuForm(this, this.localServer, localNodeLogin.getLocalNode());
+                this.menuForm = new MenuForm(this, this.localServer, localNodeLogin.getLocalNode()); // TODO: Issue: Request data as null
                 this.menuForm.configFrame();
 
                 clearVariables();
