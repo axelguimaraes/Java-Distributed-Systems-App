@@ -33,9 +33,9 @@ public class StartFrame extends JFrame {
     public StartFrame(LocalServer localServer) throws IOException {
         this.jsonHelper = new GsonBuilder().serializeNulls().create();
         this.localServer = localServer;
-        //configButtons();
+        configButtons();
 
-        this.localServer.sendMessage(this.jsonHelper.toJson(new Request<>(RequestType.REGISTER)));
+        //this.localServer.sendMessage(this.jsonHelper.toJson(new Request<>(RequestType.REGISTER)));
     }
 
     private void configButtons() {
@@ -64,7 +64,7 @@ public class StartFrame extends JFrame {
     }
 
     public void configFrame() {
-        setContentPane(mainPanel); // TODO: mainPanel comes as null for some FUCKING REASON!!!!
+        setContentPane(mainPanel);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -96,8 +96,14 @@ public class StartFrame extends JFrame {
                 LocalNodeLogin localNodeLogin = this.jsonHelper.<Response<LocalNodeLogin>>fromJson(message, new TypeToken<Response<LocalNodeLogin>>() {
                 }.getType()).getData();
 
-                //this.menuForm = new MenuForm(this, this.localServer, localNodeLogin.getLocalNode());
-                //this.menuForm.configFrame();
+                this.menuForm = new MenuForm(this, this.localServer, localNodeLogin.getLocalNode());
+                this.menuForm.configFrame();
+
+                clearVariables();
+                this.setVisible(false);
+                break;
+            default:
+                //this.menuForm.processMessage(message, response.getType());
         }
     }
 }
