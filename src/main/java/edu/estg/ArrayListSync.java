@@ -1,13 +1,14 @@
-package edu.estg.models;
+package edu.estg;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 public class ArrayListSync<T> extends ArrayList<T> {
-     public ArrayListSync() {
-         super();
-     }
+
+    public ArrayListSync() {
+        super();
+    }
 
     public ArrayListSync(Collection<? extends T> c) {
         super(c);

@@ -1,0 +1,7 @@
+package edu.estg.utils;
+
+public enum RequestType {
+    LOCAL_NODE_LOGIN, LOCAL_NODE_REGISTER,
+    PASSENGER_LOGIN, PASSENGER_REGISTER,
+    BROADCAST_MESSAGE
+}
