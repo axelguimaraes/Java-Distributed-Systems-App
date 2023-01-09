@@ -1,10 +1,10 @@
-package edu.estg.models.schemas;
+package edu.estg.utils;
 
 public class Response<T> {
-    private ResponseStatus status;
-    private RequestType type;
-    private String message;
-    private T data;
+    public ResponseStatus status;
+    public RequestType type;
+    public String message;
+    public T data;
 
     public Response(ResponseStatus status, RequestType type, String message, T data) {
         this.status = status;
@@ -31,41 +31,16 @@ public class Response<T> {
 
     public Response(RequestType type) {
         this(null, type, null, null);
+
     }
 
     public Response() {
-        this(null, null, null, null);
-    }
 
-    public ResponseStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ResponseStatus status) {
-        this.status = status;
-    }
-
-    public RequestType getType() {
-        return type;
-    }
-
-    public void setType(RequestType type) {
-        this.type = type;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public T getData() {
-        return data;
+        return this.data;
     }
 
-    public void setData(T data) {
-        this.data = data;
-    }
+
 }

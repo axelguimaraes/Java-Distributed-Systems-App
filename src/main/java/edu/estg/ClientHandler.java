@@ -1,37 +1,37 @@
-package edu.estg.centralNode;
+package edu.estg;
 
-import edu.estg.models.ArrayListSync;
+import edu.estg.userInterface.Server;
 
 import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
-    private Socket socket;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
-    private Protocol protocol;
-    private ArrayListSync<ClientHandler> clientHandlers;
-    private CentralServer centralServer;
-    private String localNodeUsername;
+   protected Socket socket;
+   protected BufferedReader bufferedReader;
+   protected BufferedWriter bufferedWriter;
+   protected Protocol protocol;
+   protected ArrayListSync<ClientHandler> clientHandlers;
+   protected Server server;
+   protected String username;
 
-    public ClientHandler(ArrayListSync<ClientHandler> clientHandlers, Socket socket, CentralServer centralServer) {
-        try {
-            this.socket = socket;
-            this.centralServer = centralServer;
-            this.clientHandlers = clientHandlers;
-            this.protocol = new Protocol(this, clientHandlers, centralServer);
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.clientHandlers.add(this);
-        } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
-        }
-    }
+   public ClientHandler(ArrayListSync<ClientHandler> clientHandlers, Socket socket, Server server) {
+       try {
+           this.socket = socket;
+           this.server = server;
+           this.clientHandlers = clientHandlers;
+           this.protocol = new Protocol(this, clientHandlers, server);
+           this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+           this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+           this.clientHandlers.add(this);
+       } catch (IOException e) {
+           closeEverything(socket, bufferedReader, bufferedWriter);
+       }
+   }
 
-    @Override
+   @Override
     public void run() {
-        receivedMessages();
-    }
+       receivedMessages();
+   }
 
     private void receivedMessages() {
         new Thread(() -> {
@@ -43,7 +43,6 @@ public class ClientHandler implements Runnable {
                         closeEverything(socket, bufferedReader, bufferedWriter);
                         return;
                     }
-
                     System.out.println("REQUEST -> " + inputMessage);
 
                     String responseMessage = this.protocol.processMessage(inputMessage);
@@ -72,18 +71,12 @@ public class ClientHandler implements Runnable {
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null) bufferedReader.close();
+
             if (bufferedWriter != null) bufferedWriter.close();
+
             if (socket != null) socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getLocalNodeUsername() {
-        return localNodeUsername;
-    }
-
-    public void setLocalNodeUsername(String localNodeUsername) {
-        this.localNodeUsername = localNodeUsername;
     }
 }

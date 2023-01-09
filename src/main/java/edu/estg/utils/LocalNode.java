@@ -1,4 +1,4 @@
-package edu.estg.models;
+package edu.estg.utils;
 
 import java.util.ArrayList;
 
@@ -6,8 +6,8 @@ public class LocalNode {
     private String name;
     private String username;
     private String password;
-    private ArrayList<String> passengers;
-    private ArrayList<String> trainLines;
+    private ArrayList<Passenger> passengers;
+    private ArrayList<TrainLine> trainLines;
 
     public LocalNode(String name, String username, String password) {
         this.name = name;
@@ -21,31 +21,19 @@ public class LocalNode {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public ArrayList<Passenger> getPassengers() {
+        return passengers;
     }
 
-    public boolean addPassenger(String passenger) {
-        return this.passengers.add(passenger);
-    }
-
-    public boolean addTrainLine(String trainLine) {
-        return this.trainLines.add(trainLine);
+    public ArrayList<TrainLine> getTrainLines() {
+        return trainLines;
     }
 }

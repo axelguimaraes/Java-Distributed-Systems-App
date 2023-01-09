@@ -1,6 +1,4 @@
-package edu.estg.models.schemas;
-
-import edu.estg.models.LocalNode;
+package edu.estg.utils;
 
 public class LocalNodeRegister {
     private LocalNode localNode;
@@ -10,10 +8,6 @@ public class LocalNodeRegister {
     }
 
     public LocalNode getLocalNode() {
-        return localNode;
-    }
-
-    public void setLocalNode(LocalNode localNode) {
-        this.localNode = localNode;
+        return this.localNode;
     }
 }

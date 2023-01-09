@@ -1,8 +1,10 @@
-package edu.estg.localNode;
+package edu.estg.userInterface;
 
-import edu.estg.localNode.UI.StartFrame;
+import com.google.gson.Gson;
+import edu.estg.Menu;
 
 import java.io.*;
+import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetConnectedException;
@@ -10,28 +12,25 @@ import java.nio.channels.NotYetConnectedException;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
-public class LocalServer {
+public class Client {
     private MulticastSocket multicastSocket;
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private final StartFrame startFrame;
+    // private StartFrame;
+    private final Gson jsonHelper = new Gson();
 
-    public LocalServer(MulticastSocket multicastSocket, String host, int port) throws IOException {
+    public Client(MulticastSocket multicastSocket, String host, int port) {
         try {
             this.socket = new Socket(host, port);
             this.multicastSocket = multicastSocket;
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-            this.startFrame = new StartFrame(this);
-            startFrame.configFrame();
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
             throw new NotYetConnectedException();
         }
     }
-
     public void sendMessage(String message) {
         new Thread(() -> {
             if (message != null) {
@@ -46,19 +45,37 @@ public class LocalServer {
         }).start();
     }
 
-    public void receiveMessage() {
+    private void receiveMessagesMulticast() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    byte[] buf = new byte[256];
+                    DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length);
+                    multicastSocket.receive(datagramPacket);
+
+                    String received = new String(datagramPacket.getData(), datagramPacket.getOffset(), datagramPacket.getLength());
+
+                    System.out.println("MULTICAST -> " + received);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+
+        }).start();
+    }
+
+    public void receiveMessages() {
         new Thread(() -> {
             while (true) {
                 try {
                     String responseMessage = bufferedReader.readLine();
 
-                    if (responseMessage == null) closeEverything(socket, bufferedReader, bufferedWriter);
-
+                    if (responseMessage == null)
+                        closeEverything(socket, bufferedReader, bufferedWriter);
                     System.out.println(responseMessage);
 
-                    this.startFrame.processResponse(responseMessage);
-
-                    System.out.println(responseMessage);
                 } catch (IOException e) {
                     closeEverything(socket, bufferedReader, bufferedWriter);
                     break;
@@ -67,10 +84,12 @@ public class LocalServer {
         }).start();
     }
 
-    private void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null) bufferedReader.close();
+
             if (bufferedWriter != null) bufferedWriter.close();
+
             if (socket != null) socket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,10 +99,19 @@ public class LocalServer {
     public static void main(String[] args) {
         try {
             MulticastSocket multicastSocket = new MulticastSocket(4446);
-            LocalServer localServer = new LocalServer(multicastSocket, "localhost", 2048);
-            localServer.receiveMessage();
+            Client client = new Client(multicastSocket, "localhost", 2048);
+
+            client.receiveMessages();
+            client.receiveMessagesMulticast();
+            Menu menu = new Menu(client);
+            menu.startMenu();
+
         } catch (NotYetConnectedException | IOException e) {
-            showMessageDialog(null, "Not connected", "", ERROR_MESSAGE);
+            showMessageDialog(null, "Sem conexão", "", ERROR_MESSAGE);
         }
+    }
+
+    public Socket getSocket() {
+        return this.socket;
     }
 }
