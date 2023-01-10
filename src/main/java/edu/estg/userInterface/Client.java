@@ -1,23 +1,17 @@
 package edu.estg.userInterface;
 
-import com.google.gson.Gson;
-
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetConnectedException;
 
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Client {
     private MulticastSocket multicastSocket;
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    // private StartFrame;
-    private final Gson jsonHelper = new Gson();
 
     public Client(MulticastSocket multicastSocket, String host, int port) {
         try {
@@ -107,11 +101,7 @@ public class Client {
             menu.startMenu();
 
         } catch (NotYetConnectedException | IOException e) {
-            showMessageDialog(null, "Sem conexão", "", ERROR_MESSAGE);
+            System.err.println("Not yet connected!");
         }
-    }
-
-    public Socket getSocket() {
-        return this.socket;
     }
 }
