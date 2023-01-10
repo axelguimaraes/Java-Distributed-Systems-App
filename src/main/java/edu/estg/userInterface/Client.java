@@ -1,7 +1,6 @@
 package edu.estg.userInterface;
 
 import com.google.gson.Gson;
-import edu.estg.Menu;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -74,7 +73,8 @@ public class Client {
 
                     if (responseMessage == null)
                         closeEverything(socket, bufferedReader, bufferedWriter);
-                    System.out.println(responseMessage);
+
+                    //System.out.println(responseMessage);
 
                 } catch (IOException e) {
                     closeEverything(socket, bufferedReader, bufferedWriter);

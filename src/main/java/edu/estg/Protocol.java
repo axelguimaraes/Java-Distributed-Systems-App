@@ -7,6 +7,7 @@ import edu.estg.utils.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Protocol {
     private final JsonFileHelper jsonFileHelper;
