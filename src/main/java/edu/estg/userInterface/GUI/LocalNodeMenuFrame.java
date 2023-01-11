@@ -3,11 +3,13 @@ package edu.estg.userInterface.GUI;
 import com.google.gson.Gson;
 import edu.estg.userInterface.Client;
 import edu.estg.utils.LocalNode;
+import edu.estg.utils.TrainLine;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 public class LocalNodeMenuFrame extends JFrame {
     private JPanel mainPanel;
@@ -20,6 +22,7 @@ public class LocalNodeMenuFrame extends JFrame {
     private JButton button3;
     private final Gson jsonHelper;
     private final LocalNode localNode;
+    private final ArrayList<TrainLine> trainLines;
     private final Client client;
     private final InitialFrame initialFrame;
 
@@ -31,6 +34,8 @@ public class LocalNodeMenuFrame extends JFrame {
         this.client = client;
         this.localNode = localNode;
         this.nameLabel.setText(this.localNode.getName());
+        this.trainLines = this.localNode.getTrainLines();
+        updateTrainLinesList();
     }
 
     public void configFrame() {
@@ -45,6 +50,15 @@ public class LocalNodeMenuFrame extends JFrame {
         pack();
         setVisible(true);
         setLocationRelativeTo(null);
+    }
+
+    private void updateTrainLinesList() {
+        DefaultListModel listModel = new DefaultListModel();
+
+        for (int i = 0; i < this.trainLines.size(); i++) {
+            listModel.addElement(trainLines.get(i).toString());
+        }
+        this.passengersList = new JList(listModel);
     }
 
 }

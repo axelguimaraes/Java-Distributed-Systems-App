@@ -13,7 +13,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 
 public class Client {
-    private MulticastSocket multicastSocket;
+    private final MulticastSocket multicastSocket;
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;

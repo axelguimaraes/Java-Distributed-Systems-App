@@ -150,6 +150,9 @@ public class InitialFrame extends JFrame {
                 tabbedPane.setSelectedIndex(0);
                 cleanVariables();
                 break;
+            case BROADCAST_MESSAGE:
+                showMessageDialog(null, response.message, "Broadcast message", WARNING_MESSAGE);
+                break;
         }
     }
     private void dialogShow(String message, int typeMessage, int time) {

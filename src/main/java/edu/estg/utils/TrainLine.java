@@ -16,4 +16,8 @@ public class TrainLine {
     public String getEnd() {
         return end;
     }
+
+    public String toString() {
+        return this.beginning.toUpperCase() + " - " + this.end.toUpperCase();
+    }
 }
