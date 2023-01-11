@@ -3,5 +3,10 @@
     "name": "qwe",
     "username": "qwe",
     "password": "qwe"
+  },
+  {
+    "name": null,
+    "username": null,
+    "password": "javax.swing.JPasswordField[,0,66,581x20,layout\u003djavax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX\u003d0.0,alignmentY\u003d0.0,border\u003djavax.swing.plaf.BorderUIResource$CompoundBorderUIResource@53b4e13b,flags\u003d296,maximumSize\u003d,minimumSize\u003d,preferredSize\u003d,caretColor\u003dsun.swing.PrintColorUIResource[r\u003d51,g\u003d51,b\u003d51],disabledTextColor\u003djavax.swing.plaf.ColorUIResource[r\u003d184,g\u003d207,b\u003d229],editable\u003dtrue,margin\u003djavax.swing.plaf.InsetsUIResource[top\u003d0,left\u003d0,bottom\u003d0,right\u003d0],selectedTextColor\u003dsun.swing.PrintColorUIResource[r\u003d51,g\u003d51,b\u003d51],selectionColor\u003djavax.swing.plaf.ColorUIResource[r\u003d184,g\u003d207,b\u003d229],columns\u003d0,columnWidth\u003d0,command\u003d,horizontalAlignment\u003dLEADING,echoChar\u003d•]"
   }
 ]

@@ -64,7 +64,7 @@ public class Protocol {
 
             LocalNodeLogin localNodeLogin = new LocalNodeLogin(localNodeDB);
             this.clientHandler.username = localNodeDB.getUsername();
-            return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.LOCAL_NODE_LOGIN, "Login successfully!"));
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.LOCAL_NODE_LOGIN, "Login successfully!", localNodeLogin));
 
         } catch (RuntimeException e) {
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Invalid login request!"));

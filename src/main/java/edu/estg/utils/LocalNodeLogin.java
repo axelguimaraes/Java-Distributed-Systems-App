@@ -6,4 +6,8 @@ public class LocalNodeLogin {
     public LocalNodeLogin(LocalNode localNode) {
         this.localNode = localNode;
     }
+
+    public LocalNode getLocalNode() {
+        return this.localNode;
+    }
 }
