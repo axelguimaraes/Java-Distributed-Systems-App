@@ -149,7 +149,6 @@ public class InitialFrame extends JFrame {
 
                 this.menuFrame = new LocalNodeMenuFrame(this, this.client, localNodeLogin.getLocalNode());
                 this.menuFrame.configFrame();
-
                 cleanVariables();
                 this.setVisible(false);
                 break;

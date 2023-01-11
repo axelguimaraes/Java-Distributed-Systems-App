@@ -36,6 +36,7 @@ public class LocalNodeMenuFrame extends JFrame {
         this.nameLabel.setText(this.localNode.getName());
         this.trainLines = this.localNode.getTrainLines();
         updateTrainLinesList();
+
     }
 
     public void configFrame() {
@@ -52,13 +53,13 @@ public class LocalNodeMenuFrame extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    private void updateTrainLinesList() {
+    public void updateTrainLinesList() {
         DefaultListModel listModel = new DefaultListModel();
 
         for (int i = 0; i < this.trainLines.size(); i++) {
             listModel.addElement(trainLines.get(i).toString());
         }
-        this.passengersList = new JList(listModel);
+        this.passengersList.setModel(listModel);
     }
 
 }
