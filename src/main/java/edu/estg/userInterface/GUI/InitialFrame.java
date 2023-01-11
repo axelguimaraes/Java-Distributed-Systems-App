@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javax.swing.JOptionPane.*;
 
@@ -52,29 +53,48 @@ public class InitialFrame extends JFrame {
         registerButtonGroup.add(passengerRegisterRadioButton);
         localNodeRegisterRadioButton.setSelected(true);
 
+        AtomicBoolean isLoginLocalNode = new AtomicBoolean(true);
+        localNodeLoginRadioButton.addActionListener(e -> {
+            isLoginLocalNode.set(true);
+        });
+
+        passengerLoginRadioButton.addActionListener(e -> {
+            isLoginLocalNode.set(false);
+        });
+
+        AtomicBoolean isRegisterLocalNode = new AtomicBoolean(true);
+        localNodeRegisterRadioButton.addActionListener(e -> {
+            isRegisterLocalNode.set(true);
+        });
+
+        passengerRegisterRadioButton.addActionListener(e -> {
+            isRegisterLocalNode.set(false);
+        });
+
+
 
         loginButton.addActionListener(e -> {
             Login login = new Login(usernameLoginTextField.getText(), String.valueOf(passwordLoginTextField.getPassword()));
 
-            if (localNodeRegisterRadioButton.isSelected()) {
+            if (isLoginLocalNode.get()) {
                 Request<Login> request = new Request<>(RequestType.LOCAL_NODE_LOGIN, login);
                 this.client.sendMessage(new Gson().toJson(request));
 
-            } else if (passengerRegisterRadioButton.isSelected()) {
+            } else if (!isLoginLocalNode.get()) {
                 Request<Login> request = new Request<>(RequestType.PASSENGER_LOGIN, login);
                 this.client.sendMessage(new Gson().toJson(request));
             }
         });
 
         registerButton.addActionListener(e -> {
-            if (localNodeRegisterRadioButton.isSelected()) {
-                LocalNode localNode = new LocalNode(nameRegisterTextField.getName(), usernameRegisterTextField.getName(), String.valueOf(passwordRegisterTextField));
+            if (isRegisterLocalNode.get()) {
+                LocalNode localNode = new LocalNode(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()));
                 LocalNodeRegister localNodeRegister = new LocalNodeRegister(localNode);
                 Request<LocalNodeRegister> request = new Request<>(RequestType.LOCAL_NODE_REGISTER, localNodeRegister);
                 this.client.sendMessage(new Gson().toJson(request));
 
-            } else if (passengerRegisterRadioButton.isSelected()) {
-                Passenger passenger = new Passenger(nameRegisterTextField.getName(), usernameRegisterTextField.getName(), String.valueOf(passwordRegisterTextField));
+            } else if (!isRegisterLocalNode.get()) {
+                Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()));
                 PassengerRegister passengerRegister = new PassengerRegister(passenger);
                 Request<PassengerRegister> request = new Request<>(RequestType.PASSENGER_REGISTER, passengerRegister);
                 this.client.sendMessage(new Gson().toJson(request));
@@ -127,7 +147,6 @@ public class InitialFrame extends JFrame {
                 LocalNodeLogin localNodeLogin = this.jsonHelper.<Response<LocalNodeLogin>>fromJson(message, new TypeToken<Response<LocalNodeLogin>>() {
                 }.getType()).getData();
 
-                // TODO: Menu frame
                 this.menuFrame = new LocalNodeMenuFrame(this, this.client, localNodeLogin.getLocalNode());
                 this.menuFrame.configFrame();
 

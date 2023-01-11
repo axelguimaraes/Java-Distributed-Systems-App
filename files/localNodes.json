@@ -1,19 +1,10 @@
 [
   {
-    "name": "Node 1",
-    "username": "node1",
-    "password": "node1",
+    "name": "qwe",
+    "username": "qwe",
+    "password": "qwe",
     "passengers": [],
-    "trainLines": [
-      {
-        "beginning": "Porto",
-        "end": "Braga"
-      },
-      {
-        "beginning": "Porto",
-        "end": "Aveiro"
-      }
-    ]
+    "trainLines": []
   },
   {
     "name": "Node 2",
@@ -28,6 +19,22 @@
       {
         "beginning": "Porto",
         "end": "Marco de Canavezes"
+      }
+    ]
+  },
+  {
+    "name": "Node 1",
+    "username": "node1",
+    "password": "node1",
+    "passengers": [],
+    "trainLines": [
+      {
+        "beginning": "Porto",
+        "end": "Braga"
+      },
+      {
+        "beginning": "Porto",
+        "end": "Aveiro"
       }
     ]
   },
