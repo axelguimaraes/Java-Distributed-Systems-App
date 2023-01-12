@@ -105,7 +105,10 @@ public class Protocol {
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Invalid credentials!"));
             }
 
-            PassengerLogin passengerLogin = new PassengerLogin(passengerDB);
+            ArrayList<String> ipsToJoin = new ArrayList<>();
+            ipsToJoin.add(0, Server.MAIN_GROUP_IP);
+
+            PassengerLogin passengerLogin = new PassengerLogin(passengerDB, ipsToJoin);
             this.clientHandler.username = passengerDB.getUsername();
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_LOGIN, "Login successfully!", passengerLogin));
 

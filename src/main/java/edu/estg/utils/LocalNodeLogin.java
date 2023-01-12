@@ -16,6 +16,6 @@ public class LocalNodeLogin {
     }
 
     public ArrayList<String> getListIpsToJoin() {
-        return listIpsToJoin;
+        return this.listIpsToJoin;
     }
 }

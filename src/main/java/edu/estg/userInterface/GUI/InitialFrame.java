@@ -164,7 +164,12 @@ public class InitialFrame extends JFrame {
                 PassengerLogin passengerLogin = this.jsonHelper.<Response<PassengerLogin>>fromJson(message, new TypeToken<Response<PassengerLogin>>() {
                 }.getType()).getData();
 
-                // TODO: Menu frame
+                try {
+                    this.client.joinGroups(passengerLogin.getListIpsToJoin()); // TODO: NullPointerException
+                } catch (IOException e) {
+                    dialogShow("Unexpected error joining groups!", ERROR_MESSAGE, 1000);
+                }
+
                 this.passengerMenuFrame = new PassengerMenuFrame(this, this.client, passengerLogin.getPassenger());
                 this.passengerMenuFrame.configFrame();
                 cleanVariables();
