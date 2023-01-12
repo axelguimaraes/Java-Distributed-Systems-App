@@ -64,7 +64,10 @@ public class Protocol {
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Invalid credentials!"));
             }
 
-            LocalNodeLogin localNodeLogin = new LocalNodeLogin(localNodeDB);
+            ArrayList<String> ipsToJoin = new ArrayList<>();
+            ipsToJoin.add(0, Server.MAIN_GROUP_IP);
+
+            LocalNodeLogin localNodeLogin = new LocalNodeLogin(localNodeDB, ipsToJoin);
             this.clientHandler.username = localNodeDB.getUsername();
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.LOCAL_NODE_LOGIN, "Login successfully!", localNodeLogin));
 

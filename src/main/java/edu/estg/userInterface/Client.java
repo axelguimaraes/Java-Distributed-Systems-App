@@ -4,9 +4,11 @@ import edu.estg.userInterface.GUI.InitialFrame;
 
 import java.io.*;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetConnectedException;
+import java.util.ArrayList;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -35,6 +37,13 @@ public class Client {
         }
     }
 
+    public void joinGroups(ArrayList<String> ips) throws IOException {
+        System.out.println("JOIN GROUPS IP -> " + ips);
+        for (String ip : ips) {
+            this.multicastSocket.joinGroup(InetAddress.getByName(ip));
+        }
+    }
+
     public void sendMessage(String message) {
         new Thread(() -> {
             if (message != null) {
@@ -58,6 +67,8 @@ public class Client {
                     multicastSocket.receive(datagramPacket);
 
                     String received = new String(datagramPacket.getData(), datagramPacket.getOffset(), datagramPacket.getLength());
+
+                    this.initialFrame.processResponse(received);
 
                     System.out.println("MULTICAST -> " + received);
 

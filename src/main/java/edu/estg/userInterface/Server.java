@@ -45,11 +45,11 @@ public class Server {
         }
     }
 
-    public void sendBroadcastMessage() {
+    public void sendMulticastMessage() {
         new Thread(() -> {
             while (true) {
-                System.out.print("Broadcast message: ");
-                String message = this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.BROADCAST_MESSAGE, new Scanner(System.in).nextLine()));
+                System.out.print("Multicast message: ");
+                String message = this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.MULTICAST_MESSAGE, new Scanner(System.in).nextLine()));
 
                 byte[] buf = message.getBytes();
                 try {
@@ -64,7 +64,7 @@ public class Server {
     public static void main(String[] args) throws IOException {
         DatagramSocket datagramSocket = new DatagramSocket(4445);
         Server server = new Server(new ServerSocket(2048), datagramSocket);
-        server.sendBroadcastMessage();
+        server.sendMulticastMessage();
         server.startServer();
     }
 

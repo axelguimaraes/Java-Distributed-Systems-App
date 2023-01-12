@@ -8,8 +8,6 @@ import edu.estg.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -149,6 +147,12 @@ public class InitialFrame extends JFrame {
                 LocalNodeLogin localNodeLogin = this.jsonHelper.<Response<LocalNodeLogin>>fromJson(message, new TypeToken<Response<LocalNodeLogin>>() {
                 }.getType()).getData();
 
+                try {
+                    this.client.joinGroups(localNodeLogin.getListIpsToJoin());
+                } catch (IOException e) {
+                    dialogShow("Unexpected error joining groups!", ERROR_MESSAGE, 1000);
+                }
+
                 this.menuFrame = new LocalNodeMenuFrame(this, this.client, localNodeLogin.getLocalNode());
                 this.menuFrame.configFrame();
                 cleanVariables();
@@ -170,7 +174,8 @@ public class InitialFrame extends JFrame {
                 tabbedPane.setSelectedIndex(0);
                 cleanVariables();
                 break;
-            case BROADCAST_MESSAGE:
+            case MULTICAST_MESSAGE:
+                System.out.println("BROADCAST_MESSAGE");
                 showMessageDialog(null, response.message, "Broadcast message", WARNING_MESSAGE);
                 break;
             default:
