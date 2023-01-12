@@ -36,4 +36,17 @@ public class LocalNode {
     public ArrayList<TrainLine> getTrainLines() {
         return trainLines;
     }
+
+    public ArrayList<String> getTrainLinesStringList() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < this.trainLines.size(); i++) {
+            list.add(this.trainLines.get(i).toString());
+        }
+
+        return list;
+    }
+
+    public void addTrainLine(String beginning, String end) {
+        this.trainLines.add(new TrainLine(beginning, end));
+    }
 }

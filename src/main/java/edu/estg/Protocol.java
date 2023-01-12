@@ -43,9 +43,11 @@ public class Protocol {
             case LOCAL_NODE_REGISTER:
                 return localNodeRegisterHandler(requestMessage, currentLocalNodes, currentPassengers);
             case PASSENGER_LOGIN:
-                return passengerLoginHandler(requestMessage,currentPassengers);
+                return passengerLoginHandler(requestMessage, currentPassengers);
             case PASSENGER_REGISTER:
                 return passengerRegisterHandler(requestMessage, currentPassengers);
+            case ADD_TRAIN_LINE:
+                return addTrainLineHandler(requestMessage, currentLocalNodes);
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
         }
@@ -107,7 +109,7 @@ public class Protocol {
         } catch (RuntimeException e) {
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Invalid login request!"));
         }
-    };
+    }
 
     private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers) {
         try {
@@ -125,5 +127,24 @@ public class Protocol {
         } catch (IOException e) {
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, RequestType.PASSENGER_REGISTER, "Unexpected error while saving changes!"));
         }
+    }
+
+    private String addTrainLineHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes) {
+        AddTrainLinesHelper trainLineToAdd = this.jsonHelper.<Request<AddTrainLinesHelper>>fromJson(requestMessage, new TypeToken<Request<AddTrainLinesHelper>>() {
+        }.getType()).getData();
+
+        LocalNode localNodeToAdd = currentLocalNodes.stream().filter(localNode -> localNode.getName().equals(trainLineToAdd.getLocalNode())).findFirst().orElse(null);
+
+        if (localNodeToAdd == null) {
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Failed to add train line to local node!"));
+        }
+
+        localNodeToAdd.addTrainLine(trainLineToAdd.getBeginning(), trainLineToAdd.getEnd());
+        try {
+            this.jsonFileHelper.updateLocalNodes(currentLocalNodes);
+        } catch (IOException e) {
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unexpected error saving changes!"));
+        }
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK_ADD_TRAIN_LINE, "Train line added!", trainLineToAdd));
     }
 }

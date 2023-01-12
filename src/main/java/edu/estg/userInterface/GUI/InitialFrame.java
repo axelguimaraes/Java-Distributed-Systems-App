@@ -8,6 +8,8 @@ import edu.estg.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -170,6 +172,9 @@ public class InitialFrame extends JFrame {
                 break;
             case BROADCAST_MESSAGE:
                 showMessageDialog(null, response.message, "Broadcast message", WARNING_MESSAGE);
+                break;
+            default:
+                this.menuFrame.processMessage(message, response.type);
                 break;
         }
     }
