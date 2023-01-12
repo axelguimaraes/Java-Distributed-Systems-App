@@ -37,7 +37,7 @@ public class LocalNodeMenuFrame extends JFrame {
         this.initialFrame = initialFrame;
         this.client = client;
         this.localNode = localNode;
-        this.nameLabel.setText(this.localNode.getName());
+        this.nameLabel.setText("Local node: " + this.localNode.getName());
         this.trainLines = this.localNode.getTrainLinesStringList();
         loadJList(jScrollPane, linesList, this.trainLines);
         configButtons();

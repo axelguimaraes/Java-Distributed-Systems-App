@@ -107,7 +107,7 @@ public class Protocol {
 
             PassengerLogin passengerLogin = new PassengerLogin(passengerDB);
             this.clientHandler.username = passengerDB.getUsername();
-            return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_LOGIN, "Login successfully!"));
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_LOGIN, "Login successfully!", passengerLogin));
 
         } catch (RuntimeException e) {
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Invalid login request!"));

@@ -32,7 +32,8 @@ public class InitialFrame extends JFrame {
 
     private final Gson jsonHelper;
     private final Client client;
-    private LocalNodeMenuFrame menuFrame;
+    private LocalNodeMenuFrame localNodeMenuFrame;
+    private PassengerMenuFrame passengerMenuFrame;
 
     public InitialFrame(Client client) throws IOException {
         this.jsonHelper = new GsonBuilder().serializeNulls().create();
@@ -153,8 +154,8 @@ public class InitialFrame extends JFrame {
                     dialogShow("Unexpected error joining groups!", ERROR_MESSAGE, 1000);
                 }
 
-                this.menuFrame = new LocalNodeMenuFrame(this, this.client, localNodeLogin.getLocalNode());
-                this.menuFrame.configFrame();
+                this.localNodeMenuFrame = new LocalNodeMenuFrame(this, this.client, localNodeLogin.getLocalNode());
+                this.localNodeMenuFrame.configFrame();
                 cleanVariables();
                 this.setVisible(false);
                 break;
@@ -164,6 +165,8 @@ public class InitialFrame extends JFrame {
                 }.getType()).getData();
 
                 // TODO: Menu frame
+                this.passengerMenuFrame = new PassengerMenuFrame(this, this.client, passengerLogin.getPassenger());
+                this.passengerMenuFrame.configFrame();
                 cleanVariables();
                 this.setVisible(false);
                 break;
@@ -179,7 +182,7 @@ public class InitialFrame extends JFrame {
                 showMessageDialog(null, response.message, "Broadcast message", WARNING_MESSAGE);
                 break;
             default:
-                this.menuFrame.processMessage(message, response.type);
+                this.localNodeMenuFrame.processMessage(message, response.type);
                 break;
         }
     }
