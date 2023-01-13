@@ -7,7 +7,7 @@ import edu.estg.utils.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Protocol {
     private final JsonFileHelper jsonFileHelper;
@@ -43,11 +43,15 @@ public class Protocol {
             case LOCAL_NODE_REGISTER:
                 return localNodeRegisterHandler(requestMessage, currentLocalNodes, currentPassengers);
             case PASSENGER_LOGIN:
-                return passengerLoginHandler(requestMessage, currentPassengers);
+                return passengerLoginHandler(requestMessage, currentPassengers, currentLocalNodes);
             case PASSENGER_REGISTER:
                 return passengerRegisterHandler(requestMessage, currentPassengers);
             case ADD_TRAIN_LINE:
                 return addTrainLineHandler(requestMessage, currentLocalNodes);
+            case GET_CURRENT_LOCAL_NODES:
+                return getCurrentLocalNodesHandler(currentLocalNodes);
+            case ASSOCIATE_TRAIN_LINE:
+                return associateTrainLineHandler(requestMessage, currentLocalNodes, currentPassengers);
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
         }
@@ -94,7 +98,7 @@ public class Protocol {
         }
     }
 
-    private String passengerLoginHandler(String requestMessage, ArrayList<Passenger> currentPassengers) {
+    private String passengerLoginHandler(String requestMessage, ArrayList<Passenger> currentPassengers, ArrayList<LocalNode> currentLocalNodes) {
         try {
             Login login = this.jsonHelper.<Request<Login>>fromJson(requestMessage, new TypeToken<Request<Login>>() {
             }.getType()).getData();
@@ -105,10 +109,13 @@ public class Protocol {
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Invalid credentials!"));
             }
 
+            ArrayList<String> localNodesNotAdded = currentLocalNodes.stream().map(LocalNode::getUsername).collect(Collectors.toCollection(ArrayList::new));
+            localNodesNotAdded.remove(passengerDB.getAddedLocalNodes());
+
             ArrayList<String> ipsToJoin = new ArrayList<>();
             ipsToJoin.add(0, Server.MAIN_GROUP_IP);
 
-            PassengerLogin passengerLogin = new PassengerLogin(passengerDB, ipsToJoin);
+            PassengerLogin passengerLogin = new PassengerLogin(passengerDB, ipsToJoin, localNodesNotAdded);
             this.clientHandler.username = passengerDB.getUsername();
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_LOGIN, "Login successfully!", passengerLogin));
 
@@ -136,7 +143,7 @@ public class Protocol {
     }
 
     private String addTrainLineHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes) {
-        AddTrainLinesHelper trainLineToAdd = this.jsonHelper.<Request<AddTrainLinesHelper>>fromJson(requestMessage, new TypeToken<Request<AddTrainLinesHelper>>() {
+        AddTrainLinesToLocalNodeHelper trainLineToAdd = this.jsonHelper.<Request<AddTrainLinesToLocalNodeHelper>>fromJson(requestMessage, new TypeToken<Request<AddTrainLinesToLocalNodeHelper>>() {
         }.getType()).getData();
 
         LocalNode localNodeToAdd = currentLocalNodes.stream().filter(localNode -> localNode.getName().equals(trainLineToAdd.getLocalNode())).findFirst().orElse(null);
@@ -152,5 +159,37 @@ public class Protocol {
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unexpected error saving changes!"));
         }
         return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK_ADD_TRAIN_LINE, "Train line added!", trainLineToAdd));
+    }
+
+    private String getCurrentLocalNodesHandler(ArrayList<LocalNode> currentLocalNodes) {
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.GET_CURRENT_LOCAL_NODES, currentLocalNodes));
+    }
+
+    private String associateTrainLineHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes, ArrayList<Passenger> currentPassengers) {
+        AssociateTrainLineHelper lineToAdd = this.jsonHelper.<Request<AssociateTrainLineHelper>>fromJson(requestMessage, new TypeToken<Request<AssociateTrainLineHelper>>() {
+        }.getType()).getData();
+
+        Passenger passengerDB = currentPassengers.stream().filter(passenger -> passenger.getUsername().equals(lineToAdd.getPassenger())).findFirst().orElse(null);
+
+        if (passengerDB == null) {
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Passenger not found!"));
+        }
+
+        AssociateTrainLineHelper lineToAddAccepted = new AssociateTrainLineHelper(passengerDB.getUsername(), lineToAdd.getLineToAdd());
+
+        try {
+            for (Passenger currentPassenger : currentPassengers) {
+                if (currentPassenger.getUsername().equals(passengerDB.getUsername())) {
+                    currentPassenger.addTrainLine(lineToAddAccepted.getLineToAdd());
+                    break;
+                }
+            }
+            this.jsonFileHelper.updatePassengers(currentPassengers);
+
+        } catch (IOException e) {
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unexpeted error saving changes!"));
+        }
+
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.ASSOCIATE_TRAIN_LINE, "Train line associated!", lineToAddAccepted));
     }
 }

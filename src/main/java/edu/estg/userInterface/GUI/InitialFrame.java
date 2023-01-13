@@ -186,7 +186,12 @@ public class InitialFrame extends JFrame {
                 System.out.println("BROADCAST_MESSAGE");
                 showMessageDialog(null, response.message, "Broadcast message", WARNING_MESSAGE);
                 break;
-            default:
+
+            case GET_CURRENT_LOCAL_NODES:
+            case ASSOCIATE_TRAIN_LINE:
+                this.passengerMenuFrame.processMessage(message, response.type);
+                break;
+            case FEEDBACK_ADD_TRAIN_LINE:
                 this.localNodeMenuFrame.processMessage(message, response.type);
                 break;
         }

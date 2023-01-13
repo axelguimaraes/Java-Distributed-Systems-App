@@ -72,9 +72,10 @@ public class LocalNodeMenuFrame extends JFrame {
                 showMessageDialog(new JFrame(), "Can't leave empty fields!","", ERROR_MESSAGE);
                 return;
             }
-            AddTrainLinesHelper addTrainLinesHelper = new AddTrainLinesHelper(this.localNode.getName(), beginning, end);
-            Request<AddTrainLinesHelper> request = new Request<>(RequestType.ADD_TRAIN_LINE, addTrainLinesHelper);
+            AddTrainLinesToLocalNodeHelper addTrainLinesToLocalNodeHelper = new AddTrainLinesToLocalNodeHelper(this.localNode.getName(), beginning, end);
+            Request<AddTrainLinesToLocalNodeHelper> request = new Request<>(RequestType.ADD_TRAIN_LINE, addTrainLinesToLocalNodeHelper);
             this.client.sendMessage(this.jsonHelper.toJson(request));
+            showMessageDialog(new JFrame(), "Please logout and login again for changes to take effect","", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 

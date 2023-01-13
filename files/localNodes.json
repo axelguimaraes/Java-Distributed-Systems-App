@@ -1,28 +1,5 @@
 [
   {
-    "name": "qwe",
-    "username": "qwe",
-    "password": "qwe",
-    "passengers": [],
-    "trainLines": []
-  },
-  {
-    "name": "Node 2",
-    "username": "node2",
-    "password": "node2",
-    "passengers": [],
-    "trainLines": [
-      {
-        "beginning": "Porto",
-        "end": "Viana do Castelo"
-      },
-      {
-        "beginning": "Porto",
-        "end": "Marco de Canavezes"
-      }
-    ]
-  },
-  {
     "name": "Node 1",
     "username": "node1",
     "password": "node1",
@@ -49,5 +26,56 @@
         "end": "Vila Real"
       }
     ]
+  },
+  {
+    "name": "Node 2",
+    "username": "node2",
+    "password": "node2",
+    "passengers": [],
+    "trainLines": [
+      {
+        "beginning": "Porto",
+        "end": "Viana do Castelo"
+      },
+      {
+        "beginning": "Porto",
+        "end": "Marco de Canavezes"
+      }
+    ]
+  },
+  {
+    "name": "qwe",
+    "username": "qwe",
+    "password": "qwe",
+    "passengers": [],
+    "trainLines": [
+      {
+        "beginning": "Porto",
+        "end": "Marco"
+      },
+      {
+        "beginning": "porto",
+        "end": "aveiro"
+      },
+      {
+        "beginning": "qwe",
+        "end": "qwe"
+      },
+      {
+        "beginning": "asd",
+        "end": "asd"
+      },
+      {
+        "beginning": "fdff",
+        "end": "dfdf"
+      }
+    ]
+  },
+  {
+    "name": "qwe",
+    "username": "qwe",
+    "password": "qwe",
+    "passengers": [],
+    "trainLines": []
   }
 ]

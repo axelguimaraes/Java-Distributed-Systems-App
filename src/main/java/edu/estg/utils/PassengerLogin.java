@@ -5,10 +5,12 @@ import java.util.ArrayList;
 public class PassengerLogin {
     private Passenger passenger;
     private ArrayList<String> listIpsToJoin;
+    private ArrayList<String> localNodesToAdd;
 
-    public PassengerLogin(Passenger passenger, ArrayList<String> listIpsToJoin) {
+    public PassengerLogin(Passenger passenger, ArrayList<String> listIpsToJoin, ArrayList<String> localNodesToAdd) {
         this.passenger = passenger;
         this.listIpsToJoin = listIpsToJoin;
+        this.localNodesToAdd = localNodesToAdd;
     }
 
     public Passenger getPassenger() {
@@ -17,5 +19,9 @@ public class PassengerLogin {
 
     public ArrayList<String> getListIpsToJoin() {
         return this.listIpsToJoin;
+    }
+
+    public ArrayList<String> getLocalNodesToAdd() {
+        return this.localNodesToAdd;
     }
 }

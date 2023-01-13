@@ -1,11 +1,11 @@
 package edu.estg.utils;
 
-public class AddTrainLinesHelper {
+public class AddTrainLinesToLocalNodeHelper {
     private String localNode;
     private String beginning;
     private String end;
 
-    public AddTrainLinesHelper(String localNode, String beginning, String end) {
+    public AddTrainLinesToLocalNodeHelper(String localNode, String beginning, String end) {
         this.localNode = localNode;
         this.beginning = beginning;
         this.end = end;

@@ -2,11 +2,10 @@
   {
     "name": "qwe",
     "username": "qwe",
-    "password": "qwe"
-  },
-  {
-    "name": "qwerty",
-    "username": "qwerty",
-    "password": "qwerty"
+    "password": "qwe",
+    "addedTrainLines": [
+      "PORTO - BRAGA",
+      "PORTO - AVEIRO"
+    ]
   }
 ]
