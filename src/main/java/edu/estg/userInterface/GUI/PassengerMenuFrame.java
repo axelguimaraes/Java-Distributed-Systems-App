@@ -1,7 +1,6 @@
 package edu.estg.userInterface.GUI;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import edu.estg.userInterface.Client;
 import edu.estg.utils.*;
 
@@ -15,17 +14,14 @@ public class PassengerMenuFrame extends JFrame {
     private JPanel mainPanel;
     private JLabel passengerNameLabel;
     private JList list1;
-    private JButton associateNewTrainLineButton;
     private JButton sendEventMessageButton;
     private JButton exitButton;
     private JScrollPane scrollLinesAssociated;
-    private JList listLinesAssociated;
-    private Gson jsonHelper;
-    private Passenger passenger;
-    private ArrayList<String> trainLinesAssociated;
-    private Client client;
+    private JList<String> listLinesAssociated;
+    private final Gson jsonHelper;
+    private final Passenger passenger;
+    private final Client client;
     private final InitialFrame initialFrame;
-    private ArrayList<LocalNode> localNodes;
 
     public PassengerMenuFrame(InitialFrame initialFrame, Client client, Passenger passenger) {
         setContentPane(mainPanel);
@@ -35,10 +31,6 @@ public class PassengerMenuFrame extends JFrame {
         this.client = client;
         this.passenger = passenger;
         this.passengerNameLabel.setText("Hello " + this.passenger.getName());
-        this.trainLinesAssociated = new ArrayList<>();
-
-        Request<ArrayList<LocalNode>> request = new Request<>(RequestType.GET_CURRENT_LOCAL_NODES);
-        this.client.sendMessage(this.jsonHelper.toJson(request));
 
         configButtons();
         configTabTrainLines();
@@ -60,10 +52,6 @@ public class PassengerMenuFrame extends JFrame {
     }
 
     public void configButtons() {
-        associateNewTrainLineButton.addActionListener(e -> {
-            new TrainLinesListPopupWindow(this.localNodes, this.client, this.passenger);
-        });
-
         exitButton.addActionListener(e -> {
             exitButton.setEnabled(false);
             this.initialFrame.setVisible(true);
@@ -81,22 +69,10 @@ public class PassengerMenuFrame extends JFrame {
     public void processMessage(String message, RequestType type) {
         Response<Object> response = jsonHelper.<Response<Object>>fromJson(message, Response.class);
 
-        switch (response.type) {
-            case GET_CURRENT_LOCAL_NODES:
-                this.localNodes = this.jsonHelper.<Response<ArrayList<LocalNode>>>fromJson(message, new TypeToken<Response<ArrayList<LocalNode>>>() {
-                }.getType()).getData();
-                break;
-            case ASSOCIATE_TRAIN_LINE:
-                AssociateTrainLineHelper trainLineHelper = this.jsonHelper.<Response<AssociateTrainLineHelper>>fromJson(message, new TypeToken<Response<AssociateTrainLineHelper>>() {
-                }.getType()).getData();
-
-                this.trainLinesAssociated.add(trainLineHelper.getLineToAdd());
-                loadJList(scrollLinesAssociated, listLinesAssociated, this.trainLinesAssociated);
-        }
     }
 
-    private void configTabTrainLines() { // TODO: List is not getting previous existing lines
-        loadJList(scrollLinesAssociated, listLinesAssociated, this.trainLinesAssociated);
+    private void configTabTrainLines() {
+        loadJList(scrollLinesAssociated, listLinesAssociated, this.passenger.getAddedTrainLines());
     }
 }
 

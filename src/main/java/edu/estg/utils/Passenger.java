@@ -8,11 +8,11 @@ public class Passenger {
     private final String password;
     private ArrayList<String> addedTrainLines;
 
-    public Passenger(String name, String username, String password) {
+    public Passenger(String name, String username, String password, ArrayList<String> addedTrainLines) {
         this.name = name;
         this.username = username;
         this.password = password;
-        this.addedTrainLines = new ArrayList<>();
+        this.addedTrainLines = addedTrainLines;
     }
 
     public String getName() {
@@ -27,11 +27,7 @@ public class Passenger {
         return password;
     }
 
-    public ArrayList<String> getAddedLocalNodes() {
+    public ArrayList<String> getAddedTrainLines() {
         return this.addedTrainLines;
-    }
-
-    public void addTrainLine(String trainLine) {
-        this.addedTrainLines.add(trainLine);
     }
 }

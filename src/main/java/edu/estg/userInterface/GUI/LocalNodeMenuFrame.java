@@ -1,6 +1,7 @@
 package edu.estg.userInterface.GUI;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import edu.estg.userInterface.Client;
 import edu.estg.utils.*;
 
@@ -69,13 +70,12 @@ public class LocalNodeMenuFrame extends JFrame {
             String end = JOptionPane.showInputDialog("End:");
 
             if (beginning.equals("") || end.equals("")) {
-                showMessageDialog(new JFrame(), "Can't leave empty fields!","", ERROR_MESSAGE);
+                showMessageDialog(new JFrame(), "Can't leave empty fields!", "", ERROR_MESSAGE);
                 return;
             }
             AddTrainLinesToLocalNodeHelper addTrainLinesToLocalNodeHelper = new AddTrainLinesToLocalNodeHelper(this.localNode.getName(), beginning, end);
             Request<AddTrainLinesToLocalNodeHelper> request = new Request<>(RequestType.ADD_TRAIN_LINE, addTrainLinesToLocalNodeHelper);
             this.client.sendMessage(this.jsonHelper.toJson(request));
-            showMessageDialog(new JFrame(), "Please logout and login again for changes to take effect","", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 
@@ -89,6 +89,10 @@ public class LocalNodeMenuFrame extends JFrame {
     public void processMessage(String message, RequestType type) {
         switch (type) {
             case FEEDBACK_ADD_TRAIN_LINE: // TODO: List not updating
+                AddTrainLinesToLocalNodeHelper line = this.jsonHelper.<Response<AddTrainLinesToLocalNodeHelper>>fromJson(message, new TypeToken<Response<AddTrainLinesToLocalNodeHelper>>() {
+                }.getType()).getData();
+                this.trainLines.add(line.getLine());
+
                 loadJList(jScrollPane, this.linesList, this.trainLines);
                 break;
         }

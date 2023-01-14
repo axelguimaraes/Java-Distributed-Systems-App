@@ -22,4 +22,8 @@ public class AddTrainLinesToLocalNodeHelper {
     public String getEnd() {
         return end;
     }
+
+    public String getLine() {
+        return this.beginning.toUpperCase() + " - " + this.end.toUpperCase();
+    }
 }

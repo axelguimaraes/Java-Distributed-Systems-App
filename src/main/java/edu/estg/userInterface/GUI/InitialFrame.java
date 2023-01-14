@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javax.swing.JOptionPane.*;
@@ -29,19 +30,30 @@ public class InitialFrame extends JFrame {
     private JButton registerButton;
     private JRadioButton localNodeLoginRadioButton;
     private JRadioButton passengerLoginRadioButton;
+    private JList<String> trainList;
+    private JPanel listPanel;
+    private JScrollPane listScrollPanel;
 
     private final Gson jsonHelper;
     private final Client client;
     private LocalNodeMenuFrame localNodeMenuFrame;
     private PassengerMenuFrame passengerMenuFrame;
+    private ArrayList<LocalNode> currentLocalNodes;
+    private ArrayList<String> linesToAdd;
 
     public InitialFrame(Client client) throws IOException {
         this.jsonHelper = new GsonBuilder().serializeNulls().create();
         this.client = client;
-        configButtons();
+        this.currentLocalNodes = new ArrayList<>();
+        Request<ArrayList<LocalNode>> request = new Request<>(RequestType.GET_CURRENT_LOCAL_NODES);
+        this.client.sendMessage(this.jsonHelper.toJson(request));
+        this.linesToAdd = new ArrayList<>();
+
     }
 
     private void configButtons() {
+        this.linesToAdd.addAll(linesToAdd());
+        loadJList(this.listScrollPanel, this.trainList, this.linesToAdd);
         // Login group
         ButtonGroup loginButtonGroup = new ButtonGroup();
         loginButtonGroup.add(localNodeLoginRadioButton);
@@ -66,12 +78,14 @@ public class InitialFrame extends JFrame {
         AtomicBoolean isRegisterLocalNode = new AtomicBoolean(true);
         localNodeRegisterRadioButton.addActionListener(e -> {
             isRegisterLocalNode.set(true);
+            this.trainList.clearSelection();
+            this.trainList.disable();
         });
 
         passengerRegisterRadioButton.addActionListener(e -> {
             isRegisterLocalNode.set(false);
+            this.trainList.enable();
         });
-
 
 
         loginButton.addActionListener(e -> {
@@ -95,7 +109,12 @@ public class InitialFrame extends JFrame {
                 this.client.sendMessage(new Gson().toJson(request));
 
             } else if (!isRegisterLocalNode.get()) {
-                Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()));
+                ArrayList<String> linesAdded = new ArrayList<>();
+
+                // TODO: Get lines added from Jlist
+                linesAdded = (ArrayList<String>) trainList.getSelectedValuesList();
+                Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()), linesAdded);
+
                 PassengerRegister passengerRegister = new PassengerRegister(passenger);
                 Request<PassengerRegister> request = new Request<>(RequestType.PASSENGER_REGISTER, passengerRegister);
                 this.client.sendMessage(new Gson().toJson(request));
@@ -128,6 +147,7 @@ public class InitialFrame extends JFrame {
         pack();
         setVisible(true);
         setLocationRelativeTo(null);
+        this.trainList.getSelectionModel().addSelectionInterval(0, this.linesToAdd.size());
     }
 
     @Override
@@ -188,6 +208,10 @@ public class InitialFrame extends JFrame {
                 break;
 
             case GET_CURRENT_LOCAL_NODES:
+                this.currentLocalNodes = this.jsonHelper.<Response<ArrayList<LocalNode>>>fromJson(message, new TypeToken<Response<ArrayList<LocalNode>>>() {
+                }.getType()).getData();
+                configButtons();
+                break;
             case ASSOCIATE_TRAIN_LINE:
                 this.passengerMenuFrame.processMessage(message, response.type);
                 break;
@@ -196,6 +220,7 @@ public class InitialFrame extends JFrame {
                 break;
         }
     }
+
     private void dialogShow(String message, int typeMessage, int time) {
         final JLabel label = new JLabel(message);
         new Timer(0, e -> {
@@ -207,5 +232,23 @@ public class InitialFrame extends JFrame {
             setInitialDelay(time);
         }}.start();
         showMessageDialog(null, label, "", typeMessage);
+    }
+
+    private ArrayList<String> linesToAdd() {
+        ArrayList<String> list = new ArrayList<>();
+
+        for (int i = 0; i < this.currentLocalNodes.size(); i++) {
+            for (int j = 0; j < this.currentLocalNodes.get(i).getTrainLines().size(); j++) {
+                list.add(this.currentLocalNodes.get(i).getTrainLines().get(j).toString());
+            }
+        }
+        return list;
+    }
+
+    private void loadJList(JScrollPane scrollPane, JList<String> list, ArrayList<String> data) {
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        listModel.addAll(data);
+        list.setModel(listModel);
+        scrollPane.setViewportView(list);
     }
 }

@@ -1,10 +1,23 @@
 [
   {
+    "name": "aaa",
+    "username": "aaa",
+    "password": "aaa",
+    "addedTrainLines": [
+      "PORTO - AVEIRO",
+      "PORTO - VIANA DO CASTELO",
+      "PORTO - MARCO",
+      "FDFF - DFDF"
+    ]
+  },
+  {
     "name": "qwe",
     "username": "qwe",
     "password": "qwe",
     "addedTrainLines": [
       "PORTO - BRAGA",
+      "PORTO - AVEIRO",
+      "PORTO - AVEIRO",
       "PORTO - AVEIRO"
     ]
   }

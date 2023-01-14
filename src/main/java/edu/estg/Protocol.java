@@ -50,8 +50,11 @@ public class Protocol {
                 return addTrainLineHandler(requestMessage, currentLocalNodes);
             case GET_CURRENT_LOCAL_NODES:
                 return getCurrentLocalNodesHandler(currentLocalNodes);
+                /*
             case ASSOCIATE_TRAIN_LINE:
                 return associateTrainLineHandler(requestMessage, currentLocalNodes, currentPassengers);
+                break;
+                 */
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
         }
@@ -110,7 +113,7 @@ public class Protocol {
             }
 
             ArrayList<String> localNodesNotAdded = currentLocalNodes.stream().map(LocalNode::getUsername).collect(Collectors.toCollection(ArrayList::new));
-            localNodesNotAdded.remove(passengerDB.getAddedLocalNodes());
+            localNodesNotAdded.remove(passengerDB.getAddedTrainLines());
 
             ArrayList<String> ipsToJoin = new ArrayList<>();
             ipsToJoin.add(0, Server.MAIN_GROUP_IP);
@@ -134,7 +137,9 @@ public class Protocol {
             if (passengerExists)
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, RequestType.PASSENGER_REGISTER, "Username already in use!"));
 
-            currentPassengers.add(passengerRegister.getPassenger());
+            currentPassengers.add(new Passenger(passengerRegister.getPassenger().getName(), passengerRegister.getPassenger()
+                    .getUsername(), passengerRegister.getPassenger().getPassword(), passengerRegister.getPassenger().getAddedTrainLines()));
+
             jsonFileHelper.updatePassengers(currentPassengers);
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_REGISTER, "Passenger registered successfully"));
         } catch (IOException e) {
@@ -165,6 +170,7 @@ public class Protocol {
         return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.GET_CURRENT_LOCAL_NODES, currentLocalNodes));
     }
 
+    /*
     private String associateTrainLineHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes, ArrayList<Passenger> currentPassengers) {
         AssociateTrainLineHelper lineToAdd = this.jsonHelper.<Request<AssociateTrainLineHelper>>fromJson(requestMessage, new TypeToken<Request<AssociateTrainLineHelper>>() {
         }.getType()).getData();
@@ -192,4 +198,6 @@ public class Protocol {
 
         return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.ASSOCIATE_TRAIN_LINE, "Train line associated!", lineToAddAccepted));
     }
+
+     */
 }
