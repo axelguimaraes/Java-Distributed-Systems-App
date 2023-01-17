@@ -212,9 +212,14 @@ public class InitialFrame extends JFrame {
                 }.getType()).getData();
                 configButtons();
                 break;
+
+            // PASSENGER PROCESS RESPONSE
             case ASSOCIATE_TRAIN_LINE:
+            case PASSENGER_MESSAGE_FEEDBACK:
                 this.passengerMenuFrame.processMessage(message, response.type);
                 break;
+
+            // LOCAL NODE PROCESS RESPONSE
             case FEEDBACK_ADD_TRAIN_LINE:
                 this.localNodeMenuFrame.processMessage(message, response.type);
                 break;

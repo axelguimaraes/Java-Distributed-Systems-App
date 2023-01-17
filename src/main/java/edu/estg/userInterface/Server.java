@@ -12,6 +12,8 @@ import java.util.Scanner;
 
 public class Server {
     public static final String MAIN_GROUP_IP = "224.0.0.2";
+    public static final String PASSENGER_GROUP_IP = "224.0.1.0";
+    public static final String LOCAL_NODE_GROUP_IP = "224.0.2.0";
     private final ServerSocket serverSocket;
     private final DatagramSocket datagramSocket;
     private final ArrayListSync<ClientHandler> clientHandlers;
@@ -58,6 +60,19 @@ public class Server {
                     e.printStackTrace();
                 }
             }
+        }).start();
+    }
+
+    public void sendMulticastPassengerMessage(String messageToSend) {
+        new Thread(() -> {
+
+            byte[] buf = messageToSend.getBytes();
+            try {
+                datagramSocket.send(new DatagramPacket(buf, buf.length, InetAddress.getByName(PASSENGER_GROUP_IP), 4446));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }).start();
     }
 

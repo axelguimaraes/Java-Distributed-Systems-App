@@ -6,8 +6,14 @@ import edu.estg.userInterface.Server;
 import edu.estg.utils.*;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import static edu.estg.userInterface.Server.PASSENGER_GROUP_IP;
 
 public class Protocol {
     private final JsonFileHelper jsonFileHelper;
@@ -50,11 +56,8 @@ public class Protocol {
                 return addTrainLineHandler(requestMessage, currentLocalNodes);
             case GET_CURRENT_LOCAL_NODES:
                 return getCurrentLocalNodesHandler(currentLocalNodes);
-                /*
-            case ASSOCIATE_TRAIN_LINE:
-                return associateTrainLineHandler(requestMessage, currentLocalNodes, currentPassengers);
-                break;
-                 */
+            case PASSENGER_MESSAGE:
+                return sendPassengerMessageHelper(requestMessage, currentPassengers, currentLocalNodes);
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
         }
@@ -73,6 +76,7 @@ public class Protocol {
 
             ArrayList<String> ipsToJoin = new ArrayList<>();
             ipsToJoin.add(0, Server.MAIN_GROUP_IP);
+            ipsToJoin.add(1, Server.LOCAL_NODE_GROUP_IP);
 
             LocalNodeLogin localNodeLogin = new LocalNodeLogin(localNodeDB, ipsToJoin);
             this.clientHandler.username = localNodeDB.getUsername();
@@ -117,6 +121,7 @@ public class Protocol {
 
             ArrayList<String> ipsToJoin = new ArrayList<>();
             ipsToJoin.add(0, Server.MAIN_GROUP_IP);
+            ipsToJoin.add(1, PASSENGER_GROUP_IP);
 
             PassengerLogin passengerLogin = new PassengerLogin(passengerDB, ipsToJoin, localNodesNotAdded);
             this.clientHandler.username = passengerDB.getUsername();
@@ -170,34 +175,12 @@ public class Protocol {
         return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.GET_CURRENT_LOCAL_NODES, currentLocalNodes));
     }
 
-    /*
-    private String associateTrainLineHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes, ArrayList<Passenger> currentPassengers) {
-        AssociateTrainLineHelper lineToAdd = this.jsonHelper.<Request<AssociateTrainLineHelper>>fromJson(requestMessage, new TypeToken<Request<AssociateTrainLineHelper>>() {
+    private String sendPassengerMessageHelper(String requestMessage, ArrayList<Passenger> currentPassengers, ArrayList<LocalNode> currentLocalNodes) {
+        PassengerMessage passengerMessage = this.jsonHelper.<Request<PassengerMessage>>fromJson(requestMessage, new TypeToken<Request<PassengerMessage>>() {
         }.getType()).getData();
 
-        Passenger passengerDB = currentPassengers.stream().filter(passenger -> passenger.getUsername().equals(lineToAdd.getPassenger())).findFirst().orElse(null);
+        server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_FEEDBACK, passengerMessage)));
 
-        if (passengerDB == null) {
-            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Passenger not found!"));
-        }
-
-        AssociateTrainLineHelper lineToAddAccepted = new AssociateTrainLineHelper(passengerDB.getUsername(), lineToAdd.getLineToAdd());
-
-        try {
-            for (Passenger currentPassenger : currentPassengers) {
-                if (currentPassenger.getUsername().equals(passengerDB.getUsername())) {
-                    currentPassenger.addTrainLine(lineToAddAccepted.getLineToAdd());
-                    break;
-                }
-            }
-            this.jsonFileHelper.updatePassengers(currentPassengers);
-
-        } catch (IOException e) {
-            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unexpeted error saving changes!"));
-        }
-
-        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.ASSOCIATE_TRAIN_LINE, "Train line associated!", lineToAddAccepted));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE, "Message sent!"));
     }
-
-     */
 }

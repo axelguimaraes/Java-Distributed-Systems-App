@@ -1,6 +1,7 @@
 package edu.estg.userInterface.GUI;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import edu.estg.userInterface.Client;
 import edu.estg.utils.*;
 
@@ -8,16 +9,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class PassengerMenuFrame extends JFrame {
     private JPanel mainPanel;
     private JLabel passengerNameLabel;
-    private JList list1;
     private JButton sendEventMessageButton;
     private JButton exitButton;
     private JScrollPane scrollLinesAssociated;
     private JList<String> listLinesAssociated;
+    private JTextArea messagesReceivedTextArea;
+    private JTextField sendMessageTextField;
     private final Gson jsonHelper;
     private final Passenger passenger;
     private final Client client;
@@ -57,6 +63,22 @@ public class PassengerMenuFrame extends JFrame {
             this.initialFrame.setVisible(true);
             this.dispose();
         });
+
+        sendEventMessageButton.addActionListener(e -> {
+            if (Objects.equals(sendMessageTextField.getText(), "")) {
+                showMessageDialog(new JFrame(), "Please write a message", "", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (listLinesAssociated.isSelectionEmpty()) {
+                showMessageDialog(new JFrame(), "Please select a train line", "", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            PassengerMessage passengerMessage = new PassengerMessage(this.passenger.getName(), sendMessageTextField.getText(), listLinesAssociated.getSelectedValue());
+            Request<PassengerMessage> request = new Request<>(RequestType.PASSENGER_MESSAGE, passengerMessage);
+            this.client.sendMessage(this.jsonHelper.toJson(request));
+        });
     }
 
     private void loadJList(JScrollPane scrollPane, JList<String> list, ArrayList<String> data) {
@@ -67,7 +89,17 @@ public class PassengerMenuFrame extends JFrame {
     }
 
     public void processMessage(String message, RequestType type) {
-        Response<Object> response = jsonHelper.<Response<Object>>fromJson(message, Response.class);
+        switch (type) {
+            case PASSENGER_MESSAGE_FEEDBACK:
+                PassengerMessage passengerMessage = this.jsonHelper.<Response<PassengerMessage>>fromJson(message, new TypeToken<Response<PassengerMessage>>() {
+                }.getType()).getData();
+
+                String messageToShow = LocalDateTime.now() + "\n" + passengerMessage.getPassenger() + " -> " + passengerMessage.getMessage() + "\n\n";
+                this.sendMessageTextField.setText("");
+
+                messagesReceivedTextArea.setText(messagesReceivedTextArea.getText() + messageToShow);
+                break;
+        }
 
     }
 

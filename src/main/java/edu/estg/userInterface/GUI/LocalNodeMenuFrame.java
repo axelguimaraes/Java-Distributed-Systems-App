@@ -23,7 +23,7 @@ public class LocalNodeMenuFrame extends JFrame {
     private JButton exitButton;
     private JButton button2;
     private JButton addTrainLineButton;
-    private JList passengersList;
+    private JList eventsList;
     private JScrollPane jScrollPane;
     private final Gson jsonHelper;
     private final LocalNode localNode;
