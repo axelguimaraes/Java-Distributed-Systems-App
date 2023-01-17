@@ -104,7 +104,7 @@ public class PassengerMenuFrame extends JFrame {
     }
 
     private void configTabTrainLines() {
-        loadJList(scrollLinesAssociated, listLinesAssociated, this.passenger.getAddedTrainLines());
+        loadJList(scrollLinesAssociated, listLinesAssociated, this.passenger.getAddedTrainLinesToString());
     }
 }
 

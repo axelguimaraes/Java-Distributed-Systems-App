@@ -1,5 +1,7 @@
 package edu.estg.utils;
 
+import java.util.Objects;
+
 public class TrainLine {
     private String beginning;
     private String end;
@@ -19,5 +21,13 @@ public class TrainLine {
 
     public String toString() {
         return this.beginning.toUpperCase() + " - " + this.end.toUpperCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrainLine trainLine = (TrainLine) o;
+        return Objects.equals(beginning, trainLine.beginning) && Objects.equals(end, trainLine.end);
     }
 }

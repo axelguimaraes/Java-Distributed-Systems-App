@@ -1,17 +1,33 @@
 [
   {
-    "name": "qwe",
-    "username": "qwe",
-    "password": "qwe",
+    "name": "node1",
+    "username": "node1",
+    "password": "node1",
     "passengers": [],
     "trainLines": [
       {
         "beginning": "porto",
-        "end": "aveiro"
+        "end": "braga"
       },
       {
-        "beginning": "braga",
-        "end": "guimarães"
+        "beginning": "aveiro",
+        "end": "guimaraes"
+      }
+    ]
+  },
+  {
+    "name": "node2",
+    "username": "node2",
+    "password": "node2",
+    "passengers": [],
+    "trainLines": [
+      {
+        "beginning": "beja",
+        "end": "faro"
+      },
+      {
+        "beginning": "lisboa",
+        "end": "sintra"
       }
     ]
   }

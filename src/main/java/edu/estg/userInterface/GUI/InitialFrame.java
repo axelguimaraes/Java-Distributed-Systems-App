@@ -13,6 +13,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static javax.swing.JOptionPane.*;
 
@@ -114,9 +116,11 @@ public class InitialFrame extends JFrame {
 
             // if is passenger register
             } else if (!isRegisterLocalNode.get()) {
-                ArrayList<String> linesAdded = new ArrayList<>();
+                ArrayList<TrainLine> linesAdded = new ArrayList<>();
+                for (int i = 0; i < trainList.getSelectedValuesList().size(); i++) {
+                    linesAdded.add(getTrainLineFromString(trainList.getSelectedValuesList().get(i)));
+                }
 
-                linesAdded = (ArrayList<String>) trainList.getSelectedValuesList();
                 Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()), linesAdded);
 
                 PassengerRegister passengerRegister = new PassengerRegister(passenger);
@@ -259,5 +263,25 @@ public class InitialFrame extends JFrame {
         listModel.addAll(data);
         list.setModel(listModel);
         scrollPane.setViewportView(list);
+    }
+
+    public static TrainLine getTrainLineFromString(String string) {
+        TrainLine trainLine = null;
+
+        String newString = string.replaceAll("\\s-\\s", " ");
+        String rxFirst = "(\\S+)";
+        String rxLast = "\\s(.*)";
+
+        Pattern pFirst = Pattern.compile(rxFirst);
+        Pattern pLast = Pattern.compile(rxLast);
+
+        Matcher matcherFirst = pFirst.matcher(newString);
+        Matcher matcherLast = pLast.matcher(newString);
+
+        if (matcherFirst.find() && matcherLast.find()) {
+            trainLine = new TrainLine(matcherFirst.group(0).toLowerCase(), matcherLast.group(0).replaceAll("\\s", "").toLowerCase());
+        }
+
+        return trainLine;
     }
 }

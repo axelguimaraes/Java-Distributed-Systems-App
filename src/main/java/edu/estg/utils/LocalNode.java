@@ -49,4 +49,8 @@ public class LocalNode {
     public void addTrainLine(String beginning, String end) {
         this.trainLines.add(new TrainLine(beginning, end));
     }
+
+    public void addPassenger(Passenger passenger) {
+        this.passengers.add(passenger);
+    }
 }

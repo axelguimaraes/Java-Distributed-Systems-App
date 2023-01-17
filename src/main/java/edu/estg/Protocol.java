@@ -51,7 +51,7 @@ public class Protocol {
             case PASSENGER_LOGIN:
                 return passengerLoginHandler(requestMessage, currentPassengers, currentLocalNodes);
             case PASSENGER_REGISTER:
-                return passengerRegisterHandler(requestMessage, currentPassengers);
+                return passengerRegisterHandler(requestMessage, currentPassengers, currentLocalNodes);
             case ADD_TRAIN_LINE:
                 return addTrainLineHandler(requestMessage, currentLocalNodes);
             case GET_CURRENT_LOCAL_NODES:
@@ -132,15 +132,37 @@ public class Protocol {
         }
     }
 
-    private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers) { // TODO: add passengers to local nodes
+    private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers, ArrayList<LocalNode> currentLocalNodes) { // TODO: add passengers to local nodes
         try {
             PassengerRegister passengerRegister = this.jsonHelper.<Request<PassengerRegister>>fromJson(requestMessage, new TypeToken<Request<PassengerRegister>>() {
             }.getType()).getData();
 
-            boolean passengerExists = currentPassengers.contains(passengerRegister.getPassenger());
+            boolean passengerExists = false;
+            for (int i = 0; i < currentPassengers.size(); i++) {
+                if (currentPassengers.get(i).equals(passengerRegister.getPassenger())) {
+                    passengerExists = true;
+                    break;
+                }
+            }
 
             if (passengerExists)
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, RequestType.PASSENGER_REGISTER, "Username already in use!"));
+
+
+            for (int i = 0; i < currentLocalNodes.size(); i++) {
+                for (int j = 0; j < currentLocalNodes.get(i).getTrainLines().size(); j++) {
+                    for (int k = 0; k < passengerRegister.getPassenger().getAddedTrainLines().size(); k++) {
+                        if (currentLocalNodes.get(i).getTrainLines().get(j).equals(passengerRegister.getPassenger().getAddedTrainLines().get(k))) {
+                            if (!currentLocalNodes.get(i).getPassengers().contains(passengerRegister.getPassenger())) {
+                                currentLocalNodes.get(i).addPassenger(passengerRegister.getPassenger());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            jsonFileHelper.updateLocalNodes(currentLocalNodes);
+
 
             currentPassengers.add(new Passenger(passengerRegister.getPassenger().getName(), passengerRegister.getPassenger()
                     .getUsername(), passengerRegister.getPassenger().getPassword(), passengerRegister.getPassenger().getAddedTrainLines()));

@@ -1,14 +1,17 @@
 package edu.estg.utils;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Passenger {
     private final String name;
     private final String username;
     private final String password;
-    private ArrayList<String> addedTrainLines;
+    private ArrayList<TrainLine> addedTrainLines;
 
-    public Passenger(String name, String username, String password, ArrayList<String> addedTrainLines) {
+    public Passenger(String name, String username, String password, ArrayList<TrainLine> addedTrainLines) {
         this.name = name;
         this.username = username;
         this.password = password;
@@ -27,7 +30,23 @@ public class Passenger {
         return password;
     }
 
-    public ArrayList<String> getAddedTrainLines() {
+    public ArrayList<TrainLine> getAddedTrainLines() {
         return this.addedTrainLines;
+    }
+
+    public ArrayList<String> getAddedTrainLinesToString() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < this.addedTrainLines.size(); i++) {
+            list.add(this.addedTrainLines.get(i).toString());
+        }
+        return list;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Passenger passenger = (Passenger) o;
+        return Objects.equals(username, passenger.username);
     }
 }
