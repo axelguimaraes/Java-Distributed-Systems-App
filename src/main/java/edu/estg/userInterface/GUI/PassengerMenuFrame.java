@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -76,7 +77,7 @@ public class PassengerMenuFrame extends JFrame {
             }
 
             PassengerMessage passengerMessage = new PassengerMessage(this.passenger.getName(), sendMessageTextField.getText(), listLinesAssociated.getSelectedValue());
-            Request<PassengerMessage> request = new Request<>(RequestType.PASSENGER_MESSAGE, passengerMessage);
+            Request<PassengerMessage> request = new Request<>(RequestType.PASSENGER_MESSAGE_TO_NODE, passengerMessage);
             this.client.sendMessage(this.jsonHelper.toJson(request)); // TODO: message not passing through local nodes
         });
     }
@@ -90,11 +91,26 @@ public class PassengerMenuFrame extends JFrame {
 
     public void processMessage(String message, RequestType type) {
         switch (type) {
-            case PASSENGER_MESSAGE_FEEDBACK:
+            case PASSENGER_MESSAGE_FROM_NODE:
                 PassengerMessage passengerMessage = this.jsonHelper.<Response<PassengerMessage>>fromJson(message, new TypeToken<Response<PassengerMessage>>() {
                 }.getType()).getData();
 
-                String messageToShow = LocalDateTime.now() + "\n" + passengerMessage.getPassenger() + " -> " + passengerMessage.getMessage() + "\n\n";
+                boolean exists = false;
+                for (int i = 0; i < this.passenger.getAddedTrainLines().size(); i++) {
+                    if (this.passenger.getAddedTrainLines().get(i).equals(passengerMessage.getTrainLineFromString(passengerMessage.getTrainLine()))) {
+                        exists = true;
+                    }
+                }
+
+                if (!exists) {
+                    break;
+                }
+
+                LocalDateTime date = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                String formattedDate = date.format(formatter);
+
+                String messageToShow = formattedDate + " :: " + passengerMessage.getTrainLine() + "\n" + passengerMessage.getPassenger() + " -> " + passengerMessage.getMessage() + "\n\n";
                 this.sendMessageTextField.setText("");
 
                 messagesReceivedTextArea.setText(messagesReceivedTextArea.getText() + messageToShow);

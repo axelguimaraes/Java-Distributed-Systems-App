@@ -56,7 +56,7 @@ public class Protocol {
                 return addTrainLineHandler(requestMessage, currentLocalNodes);
             case GET_CURRENT_LOCAL_NODES:
                 return getCurrentLocalNodesHandler(currentLocalNodes);
-            case PASSENGER_MESSAGE:
+            case PASSENGER_MESSAGE_TO_NODE:
                 return sendPassengerMessageHelper(requestMessage, currentPassengers, currentLocalNodes);
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
@@ -201,8 +201,8 @@ public class Protocol {
         PassengerMessage passengerMessage = this.jsonHelper.<Request<PassengerMessage>>fromJson(requestMessage, new TypeToken<Request<PassengerMessage>>() {
         }.getType()).getData();
 
-        server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_FEEDBACK, passengerMessage)));
+        server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_FROM_NODE, passengerMessage)));
 
-        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE, "Message sent!"));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.SOMETHING, "Message sent!"));
     }
 }

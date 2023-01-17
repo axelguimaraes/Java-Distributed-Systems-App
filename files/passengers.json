@@ -1,0 +1,36 @@
+[
+  {
+    "name": "qwe",
+    "username": "qwe",
+    "password": "qwe",
+    "addedTrainLines": [
+      {
+        "beginning": "porto",
+        "end": "braga"
+      },
+      {
+        "beginning": "aveiro",
+        "end": "guimaraes"
+      },
+      {
+        "beginning": "beja",
+        "end": "faro"
+      },
+      {
+        "beginning": "lisboa",
+        "end": "sintra"
+      }
+    ]
+  },
+  {
+    "name": "aaa",
+    "username": "aaa",
+    "password": "aaa",
+    "addedTrainLines": [
+      {
+        "beginning": "lisboa",
+        "end": "sintra"
+      }
+    ]
+  }
+]

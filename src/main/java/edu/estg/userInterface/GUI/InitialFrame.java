@@ -223,7 +223,7 @@ public class InitialFrame extends JFrame {
 
             // PASSENGER PROCESS RESPONSE
             case ASSOCIATE_TRAIN_LINE:
-            case PASSENGER_MESSAGE_FEEDBACK:
+            case PASSENGER_MESSAGE_FROM_NODE:
                 this.passengerMenuFrame.processMessage(message, response.type);
                 break;
 
@@ -265,7 +265,7 @@ public class InitialFrame extends JFrame {
         scrollPane.setViewportView(list);
     }
 
-    public static TrainLine getTrainLineFromString(String string) {
+    private static TrainLine getTrainLineFromString(String string) {
         TrainLine trainLine = null;
 
         String newString = string.replaceAll("\\s-\\s", " ");
