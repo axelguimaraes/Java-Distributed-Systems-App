@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.estg.utils.LocalNode;
 import edu.estg.utils.Passenger;
+import edu.estg.utils.TrainLine;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -48,68 +49,31 @@ public class JsonFileHelper {
         return Arrays.asList(jsonHelper.fromJson(jsonString, type));
     }
 
-    public synchronized boolean addLocalNode(LocalNode localNode) throws IOException {
-        Set<LocalNode> localNodes = new HashSet<>(getLocalNodes());
-
-        if (!localNodes.add(localNode)) return false;
-
-        serialize("localNodes", localNode);
-        return true;
-    }
-
-    public synchronized boolean updateLocalNode(LocalNode localNode) throws IOException {
-        Set<LocalNode> localNodes = new HashSet<>(getLocalNodes());
-
-        localNodes.remove(localNode);
-        localNodes.add(localNode);
-
-        serialize("localNodes", localNodes);
-        return true;
-    }
-
     public synchronized void updateLocalNodes(ArrayList<LocalNode> localNodes) throws IOException {
         serialize("localNodes", new HashSet<>(localNodes));
-    }
-
-    public synchronized LocalNode getLocalNode(String username) throws IOException {
-        ArrayList<LocalNode> localNodes = new ArrayList<>(getLocalNodes());
-        return localNodes.stream().filter(localNode -> localNode.getUsername().equals(username)).findFirst().orElse(null);
     }
 
     public synchronized ArrayList<LocalNode> getLocalNodes() throws IOException {
         return new ArrayList<>(deserializeArray("localNodes", LocalNode[].class));
     }
 
-    public synchronized boolean addPassenger(Passenger passenger) throws IOException {
-        Set<Passenger> passengers = new HashSet<>(getPassengers());
-
-        if (!passengers.add(passenger)) return false;
-
-        serialize("passengers", passengers);
-        return true;
-    }
-
-    public synchronized boolean updatePassenger(Passenger passenger) throws IOException {
-        Set<Passenger> passengers = new HashSet<>(getPassengers());
-
-        passengers.remove(passenger);
-        passengers.add(passenger);
-
-        serialize("passengers", passengers);
-        return true;
-    }
 
     public synchronized void updatePassengers(ArrayList<Passenger> passengers) throws IOException {
         serialize("passengers", new HashSet<>(passengers));
     }
 
-    public synchronized Passenger getPassenger(String username) throws IOException {
-        ArrayList<Passenger> passengers = new ArrayList<>(getPassengers());
-        return passengers.stream().filter(passenger -> passenger.getUsername().equals(username)).findFirst().orElse(null);
-    }
 
     public synchronized ArrayList<Passenger> getPassengers() throws IOException {
         return new ArrayList<>(deserializeArray("passengers", Passenger[].class));
+    }
+
+    // TODO: here
+    public synchronized void updateTrainLines(ArrayList<TrainLine> trainLines) throws IOException {
+        serialize("trainLines", new HashSet<>(trainLines));
+    }
+
+    public synchronized ArrayList<TrainLine> getTrainLines() throws IOException {
+        return new ArrayList<>(deserializeArray("trainLines", TrainLine[].class));
     }
 
 }

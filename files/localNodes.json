@@ -1,81 +1,17 @@
 [
   {
-    "name": "Node 3",
-    "username": "node3",
-    "password": "node3",
-    "passengers": [],
-    "trainLines": [
-      {
-        "beginning": "Porto",
-        "end": "Vila Real"
-      }
-    ]
-  },
-  {
     "name": "qwe",
     "username": "qwe",
     "password": "qwe",
     "passengers": [],
     "trainLines": [
       {
-        "beginning": "Porto",
-        "end": "Marco"
-      },
-      {
         "beginning": "porto",
         "end": "aveiro"
       },
       {
-        "beginning": "qwe",
-        "end": "qwe"
-      },
-      {
-        "beginning": "aa",
-        "end": "aa"
-      },
-      {
-        "beginning": "ss",
-        "end": "ss"
-      },
-      {
-        "beginning": "qwer",
-        "end": "wqer"
-      },
-      {
-        "beginning": "asasaas",
-        "end": "asasasas"
-      }
-    ]
-  },
-  {
-    "name": "Node 2",
-    "username": "node2",
-    "password": "node2",
-    "passengers": [],
-    "trainLines": [
-      {
-        "beginning": "Porto",
-        "end": "Viana do Castelo"
-      },
-      {
-        "beginning": "Porto",
-        "end": "Marco de Canavezes"
-      }
-    ]
-  },
-  {
-    "name": "Node 1",
-    "username": "node1",
-    "password": "node1",
-    "passengers": [],
-    "trainLines": [
-      {
-        "beginning": "Porto",
-        "end": "Braga"
-      },
-      {
-        "beginning": "Porto",
-        "end": "Aveiro"
+        "beginning": "braga",
+        "end": "guimarães"
       }
     ]
   }

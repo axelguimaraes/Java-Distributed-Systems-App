@@ -91,10 +91,12 @@ public class InitialFrame extends JFrame {
         loginButton.addActionListener(e -> {
             Login login = new Login(usernameLoginTextField.getText(), String.valueOf(passwordLoginTextField.getPassword()));
 
+            // if is local node login
             if (isLoginLocalNode.get()) {
                 Request<Login> request = new Request<>(RequestType.LOCAL_NODE_LOGIN, login);
                 this.client.sendMessage(new Gson().toJson(request));
 
+            // if is passenger login
             } else if (!isLoginLocalNode.get()) {
                 Request<Login> request = new Request<>(RequestType.PASSENGER_LOGIN, login);
                 this.client.sendMessage(new Gson().toJson(request));
@@ -102,16 +104,18 @@ public class InitialFrame extends JFrame {
         });
 
         registerButton.addActionListener(e -> {
+
+            // if is local node register
             if (isRegisterLocalNode.get()) {
                 LocalNode localNode = new LocalNode(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()));
                 LocalNodeRegister localNodeRegister = new LocalNodeRegister(localNode);
                 Request<LocalNodeRegister> request = new Request<>(RequestType.LOCAL_NODE_REGISTER, localNodeRegister);
                 this.client.sendMessage(new Gson().toJson(request));
 
+            // if is passenger register
             } else if (!isRegisterLocalNode.get()) {
                 ArrayList<String> linesAdded = new ArrayList<>();
 
-                // TODO: Get lines added from Jlist
                 linesAdded = (ArrayList<String>) trainList.getSelectedValuesList();
                 Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()), linesAdded);
 
@@ -185,7 +189,7 @@ public class InitialFrame extends JFrame {
                 }.getType()).getData();
 
                 try {
-                    this.client.joinGroups(passengerLogin.getListIpsToJoin()); // TODO: NullPointerException
+                    this.client.joinGroups(passengerLogin.getListIpsToJoin());
                 } catch (IOException e) {
                     dialogShow("Unexpected error joining groups!", ERROR_MESSAGE, 1000);
                 }

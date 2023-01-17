@@ -77,7 +77,7 @@ public class PassengerMenuFrame extends JFrame {
 
             PassengerMessage passengerMessage = new PassengerMessage(this.passenger.getName(), sendMessageTextField.getText(), listLinesAssociated.getSelectedValue());
             Request<PassengerMessage> request = new Request<>(RequestType.PASSENGER_MESSAGE, passengerMessage);
-            this.client.sendMessage(this.jsonHelper.toJson(request));
+            this.client.sendMessage(this.jsonHelper.toJson(request)); // TODO: message not passing through local nodes
         });
     }
 

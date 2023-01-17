@@ -132,7 +132,7 @@ public class Protocol {
         }
     }
 
-    private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers) {
+    private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers) { // TODO: add passengers to local nodes
         try {
             PassengerRegister passengerRegister = this.jsonHelper.<Request<PassengerRegister>>fromJson(requestMessage, new TypeToken<Request<PassengerRegister>>() {
             }.getType()).getData();

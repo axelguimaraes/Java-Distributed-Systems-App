@@ -88,7 +88,7 @@ public class LocalNodeMenuFrame extends JFrame {
 
     public void processMessage(String message, RequestType type) {
         switch (type) {
-            case FEEDBACK_ADD_TRAIN_LINE: // TODO: List not updating
+            case FEEDBACK_ADD_TRAIN_LINE:
                 AddTrainLinesToLocalNodeHelper line = this.jsonHelper.<Response<AddTrainLinesToLocalNodeHelper>>fromJson(message, new TypeToken<Response<AddTrainLinesToLocalNodeHelper>>() {
                 }.getType()).getData();
                 this.trainLines.add(line.getLine());
