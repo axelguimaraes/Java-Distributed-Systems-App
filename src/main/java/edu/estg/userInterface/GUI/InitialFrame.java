@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import edu.estg.userInterface.Client;
 import edu.estg.utils.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,13 +36,13 @@ public class InitialFrame extends JFrame {
     private JList<String> trainList;
     private JPanel listPanel;
     private JScrollPane listScrollPanel;
-
     private final Gson jsonHelper;
     private final Client client;
     private LocalNodeMenuFrame localNodeMenuFrame;
     private PassengerMenuFrame passengerMenuFrame;
     private ArrayList<LocalNode> currentLocalNodes;
-    private ArrayList<String> linesToAdd;
+    private final ArrayList<String> linesToAdd;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public InitialFrame(Client client) throws IOException {
         this.jsonHelper = new GsonBuilder().serializeNulls().create();
@@ -50,7 +51,7 @@ public class InitialFrame extends JFrame {
         Request<ArrayList<LocalNode>> request = new Request<>(RequestType.GET_CURRENT_LOCAL_NODES);
         this.client.sendMessage(this.jsonHelper.toJson(request));
         this.linesToAdd = new ArrayList<>();
-
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     private void configButtons() {
@@ -91,7 +92,7 @@ public class InitialFrame extends JFrame {
 
 
         loginButton.addActionListener(e -> {
-            Login login = new Login(usernameLoginTextField.getText(), String.valueOf(passwordLoginTextField.getPassword()));
+            Login login = new Login(usernameLoginTextField.getText(), passwordEncoder.encode(String.valueOf(passwordLoginTextField.getPassword())));
 
             // if is local node login
             if (isLoginLocalNode.get()) {
@@ -109,7 +110,7 @@ public class InitialFrame extends JFrame {
 
             // if is local node register
             if (isRegisterLocalNode.get()) {
-                LocalNode localNode = new LocalNode(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()));
+                LocalNode localNode = new LocalNode(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), passwordEncoder.encode(String.valueOf(passwordRegisterTextField.getPassword())));
                 LocalNodeRegister localNodeRegister = new LocalNodeRegister(localNode);
                 Request<LocalNodeRegister> request = new Request<>(RequestType.LOCAL_NODE_REGISTER, localNodeRegister);
                 this.client.sendMessage(new Gson().toJson(request));
@@ -121,7 +122,7 @@ public class InitialFrame extends JFrame {
                     linesAdded.add(getTrainLineFromString(trainList.getSelectedValuesList().get(i)));
                 }
 
-                Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), String.valueOf(passwordRegisterTextField.getPassword()), linesAdded);
+                Passenger passenger = new Passenger(nameRegisterTextField.getText(), usernameRegisterTextField.getText(), passwordEncoder.encode(String.valueOf(passwordRegisterTextField.getPassword())), linesAdded);
 
                 PassengerRegister passengerRegister = new PassengerRegister(passenger);
                 Request<PassengerRegister> request = new Request<>(RequestType.PASSENGER_REGISTER, passengerRegister);

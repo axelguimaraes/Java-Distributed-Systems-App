@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.estg.userInterface.Server;
 import edu.estg.utils.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class Protocol {
     private final ArrayListSync<ClientHandler> clientHandlers;
     private final ClientHandler clientHandler;
     protected Server server;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public Protocol(ClientHandler clientHandler, ArrayListSync<ClientHandler> clientHandlers, Server server) throws IOException {
         this.clientHandler = clientHandler;
@@ -24,6 +26,7 @@ public class Protocol {
         this.clientHandlers = clientHandlers;
         this.jsonHelper = new Gson();
         this.jsonFileHelper = new JsonFileHelper("files/");
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     protected synchronized String processMessage(String requestMessage) {
@@ -41,9 +44,9 @@ public class Protocol {
 
         switch (requestType) {
             case LOCAL_NODE_LOGIN:
-                return localNodeLoginHandler(requestMessage, currentLocalNodes, currentPassengers);
+                return localNodeLoginHandler(requestMessage, currentLocalNodes);
             case LOCAL_NODE_REGISTER:
-                return localNodeRegisterHandler(requestMessage, currentLocalNodes, currentPassengers);
+                return localNodeRegisterHandler(requestMessage, currentLocalNodes);
             case PASSENGER_LOGIN:
                 return passengerLoginHandler(requestMessage, currentPassengers, currentLocalNodes);
             case PASSENGER_REGISTER:
@@ -61,7 +64,7 @@ public class Protocol {
         }
     }
 
-    private String localNodeLoginHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes, ArrayList<Passenger> currentPassengers) {
+    private String localNodeLoginHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes) {
         try {
             Login login = this.jsonHelper.<Request<Login>>fromJson(requestMessage, new TypeToken<Request<Login>>() {
             }.getType()).getData();
@@ -85,7 +88,7 @@ public class Protocol {
         }
     }
 
-    private String localNodeRegisterHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes, ArrayList<Passenger> currentPassengers) {
+    private String localNodeRegisterHandler(String requestMessage, ArrayList<LocalNode> currentLocalNodes) {
         try {
             LocalNodeRegister localNodeRegister = this.jsonHelper.<Request<LocalNodeRegister>>fromJson(requestMessage, new TypeToken<Request<LocalNodeRegister>>() {
             }.getType()).getData();
@@ -136,8 +139,8 @@ public class Protocol {
             }.getType()).getData();
 
             boolean passengerExists = false;
-            for (int i = 0; i < currentPassengers.size(); i++) {
-                if (currentPassengers.get(i).equals(passengerRegister.getPassenger())) {
+            for (Passenger currentPassenger : currentPassengers) {
+                if (currentPassenger.equals(passengerRegister.getPassenger())) {
                     passengerExists = true;
                     break;
                 }
@@ -147,12 +150,12 @@ public class Protocol {
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, RequestType.PASSENGER_REGISTER, "Username already in use!"));
 
 
-            for (int i = 0; i < currentLocalNodes.size(); i++) {
-                for (int j = 0; j < currentLocalNodes.get(i).getTrainLines().size(); j++) {
+            for (LocalNode currentLocalNode : currentLocalNodes) {
+                for (int j = 0; j < currentLocalNode.getTrainLines().size(); j++) {
                     for (int k = 0; k < passengerRegister.getPassenger().getAddedTrainLines().size(); k++) {
-                        if (currentLocalNodes.get(i).getTrainLines().get(j).equals(passengerRegister.getPassenger().getAddedTrainLines().get(k))) {
-                            if (!currentLocalNodes.get(i).getPassengers().contains(passengerRegister.getPassenger())) {
-                                currentLocalNodes.get(i).addPassenger(passengerRegister.getPassenger());
+                        if (currentLocalNode.getTrainLines().get(j).equals(passengerRegister.getPassenger().getAddedTrainLines().get(k))) {
+                            if (!currentLocalNode.getPassengers().contains(passengerRegister.getPassenger())) {
+                                currentLocalNode.addPassenger(passengerRegister.getPassenger());
                                 break;
                             }
                         }
@@ -200,10 +203,10 @@ public class Protocol {
         }.getType()).getData();
 
         LocalNode localNode = null;
-        for (int i = 0; i < currentLocalNodes.size(); i++) {
-            for (int j = 0; j < currentLocalNodes.get(i).getTrainLines().size(); j++) {
-                if (currentLocalNodes.get(i).getTrainLines().get(j).equals(messageFromPassenger.getTrainLineFromString(messageFromPassenger.getTrainLine()))) {
-                    localNode = currentLocalNodes.get(i);
+        for (LocalNode currentLocalNode : currentLocalNodes) {
+            for (int j = 0; j < currentLocalNode.getTrainLines().size(); j++) {
+                if (currentLocalNode.getTrainLines().get(j).equals(MessageFromPassenger.getTrainLineFromString(messageFromPassenger.getTrainLine()))) {
+                    localNode = currentLocalNode;
                     break;
                 }
             }
