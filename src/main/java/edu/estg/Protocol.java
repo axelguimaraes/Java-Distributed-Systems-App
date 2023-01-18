@@ -6,11 +6,7 @@ import edu.estg.userInterface.Server;
 import edu.estg.utils.*;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static edu.estg.userInterface.Server.PASSENGER_GROUP_IP;
@@ -57,7 +53,9 @@ public class Protocol {
             case GET_CURRENT_LOCAL_NODES:
                 return getCurrentLocalNodesHandler(currentLocalNodes);
             case PASSENGER_MESSAGE_TO_NODE:
-                return sendPassengerMessageHelper(requestMessage, currentPassengers, currentLocalNodes);
+                return sendPassengerMessageToNodeHelper(requestMessage, currentLocalNodes);
+            case PASSENGER_MESSAGE_FROM_NODE:
+                return sendPassengerMessageFromNodeHelper(requestMessage);
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
         }
@@ -132,7 +130,7 @@ public class Protocol {
         }
     }
 
-    private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers, ArrayList<LocalNode> currentLocalNodes) { // TODO: add passengers to local nodes
+    private String passengerRegisterHandler(String requestMessage, ArrayList<Passenger> currentPassengers, ArrayList<LocalNode> currentLocalNodes) {
         try {
             PassengerRegister passengerRegister = this.jsonHelper.<Request<PassengerRegister>>fromJson(requestMessage, new TypeToken<Request<PassengerRegister>>() {
             }.getType()).getData();
@@ -197,12 +195,37 @@ public class Protocol {
         return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.GET_CURRENT_LOCAL_NODES, currentLocalNodes));
     }
 
-    private String sendPassengerMessageHelper(String requestMessage, ArrayList<Passenger> currentPassengers, ArrayList<LocalNode> currentLocalNodes) {
-        PassengerMessage passengerMessage = this.jsonHelper.<Request<PassengerMessage>>fromJson(requestMessage, new TypeToken<Request<PassengerMessage>>() {
+    private String sendPassengerMessageToNodeHelper(String requestMessage, ArrayList<LocalNode> currentLocalNodes) {
+        MessageFromPassenger messageFromPassenger = this.jsonHelper.<Request<MessageFromPassenger>>fromJson(requestMessage, new TypeToken<Request<MessageFromPassenger>>() {
         }.getType()).getData();
 
-        server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_FROM_NODE, passengerMessage)));
+        LocalNode localNode = null;
+        for (int i = 0; i < currentLocalNodes.size(); i++) {
+            for (int j = 0; j < currentLocalNodes.get(i).getTrainLines().size(); j++) {
+                if (currentLocalNodes.get(i).getTrainLines().get(j).equals(messageFromPassenger.getTrainLineFromString(messageFromPassenger.getTrainLine()))) {
+                    localNode = currentLocalNodes.get(i);
+                    break;
+                }
+            }
+        }
 
-        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.SOMETHING, "Message sent!"));
+        if (localNode == null) {
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Local node not found!"));
+        }
+
+        MessageFromPassenger newMessageFromPassenger = new MessageFromPassenger(messageFromPassenger.getPassenger(), messageFromPassenger.getMessage(), messageFromPassenger.getTrainLine(), localNode);
+
+        server.sendMulticastLocalNodeMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_TO_NODE, newMessageFromPassenger)));
+        //server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_TO_NODE, newPassengerMessage)));
+
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.SOMETHING));
+    }
+
+    private String sendPassengerMessageFromNodeHelper(String requestMessage) {
+        MessageToPassenger messageToPassenger = this.jsonHelper.<Request<MessageToPassenger>>fromJson(requestMessage, new TypeToken<Request<MessageToPassenger>>() {
+        }.getType()).getData();
+
+        server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_FROM_NODE, messageToPassenger)));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.SOMETHING));
     }
 }

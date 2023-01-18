@@ -62,7 +62,7 @@ public class Client {
         new Thread(() -> {
             while (true) {
                 try {
-                    byte[] buf = new byte[256];
+                    byte[] buf = new byte[1024];
                     DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length);
                     multicastSocket.receive(datagramPacket);
 

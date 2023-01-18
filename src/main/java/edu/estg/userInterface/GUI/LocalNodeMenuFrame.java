@@ -18,18 +18,20 @@ public class LocalNodeMenuFrame extends JFrame {
     private JPanel mainPanel;
     private JLabel nameLabel;
     private JPanel passengersPanel;
-    private JList linesList;
+    private JList<String> linesList;
     private JPanel namePanel;
     private JButton exitButton;
-    private JButton button2;
+    private JButton sendMessageToPassengersButton;
     private JButton addTrainLineButton;
-    private JList eventsList;
     private JScrollPane jScrollPane;
+    private JList<String> listPassengerMessages;
+    private JScrollPane scrollPassengerMessages;
     private final Gson jsonHelper;
     private final LocalNode localNode;
     private ArrayList<String> trainLines;
     private final Client client;
     private final InitialFrame initialFrame;
+    private ArrayList<MessageFromPassenger> messageFromPassengers;
 
     public LocalNodeMenuFrame(InitialFrame initialFrame, Client client, LocalNode localNode) {
         setContentPane(mainPanel);
@@ -38,6 +40,7 @@ public class LocalNodeMenuFrame extends JFrame {
         this.initialFrame = initialFrame;
         this.client = client;
         this.localNode = localNode;
+        this.messageFromPassengers = new ArrayList<>();
         this.nameLabel.setText("Local node: " + this.localNode.getName());
         this.trainLines = this.localNode.getTrainLinesStringList();
         loadJList(jScrollPane, linesList, this.trainLines);
@@ -56,6 +59,7 @@ public class LocalNodeMenuFrame extends JFrame {
         pack();
         setVisible(true);
         setLocationRelativeTo(null);
+        configPassengerMessagesList();
     }
 
     public void configButtons() {
@@ -77,6 +81,24 @@ public class LocalNodeMenuFrame extends JFrame {
             Request<AddTrainLinesToLocalNodeHelper> request = new Request<>(RequestType.ADD_TRAIN_LINE, addTrainLinesToLocalNodeHelper);
             this.client.sendMessage(this.jsonHelper.toJson(request));
         });
+
+        sendMessageToPassengersButton.addActionListener(e -> {
+            String message = JOptionPane.showInputDialog("Message:");
+            if (linesList.isSelectionEmpty()) {
+                showMessageDialog(new JFrame(), "Please select the affected line!","", ERROR_MESSAGE);
+                return;
+            }
+
+            ArrayList<TrainLine> trainLinesSelected = new ArrayList<>();
+            for (int i = 0; i < linesList.getSelectedValuesList().size(); i++) {
+                trainLinesSelected.add(MessageFromPassenger.getTrainLineFromString(linesList.getSelectedValuesList().get(i)));
+            }
+
+            MessageToPassenger messageToPassenger = new MessageToPassenger(this.localNode, trainLinesSelected, message);
+
+            Request<MessageToPassenger> request = new Request<>(RequestType.PASSENGER_MESSAGE_FROM_NODE, messageToPassenger);
+            this.client.sendMessage(this.jsonHelper.toJson(request));
+        });
     }
 
     private void loadJList(JScrollPane scrollPane, JList<String> list, ArrayList<String> data) {
@@ -95,6 +117,26 @@ public class LocalNodeMenuFrame extends JFrame {
 
                 loadJList(jScrollPane, this.linesList, this.trainLines);
                 break;
+
+            case PASSENGER_MESSAGE_TO_NODE:
+                MessageFromPassenger messageFromPassenger = this.jsonHelper.<Response<MessageFromPassenger>>fromJson(message, new TypeToken<Response<MessageFromPassenger>>() {
+                }.getType()).getData();
+
+                if (!(messageFromPassenger.getLocalNode().equals(this.localNode))) {
+                    break;
+                }
+
+                messageFromPassengers.add(messageFromPassenger);
+                configPassengerMessagesList();
         }
+    }
+
+    private void configPassengerMessagesList() {
+        ArrayList<String> messages = new ArrayList<>();
+        for (int i = 0; i < this.messageFromPassengers.size(); i++) {
+            messages.add(this.messageFromPassengers.get(i).toString());
+        }
+
+        loadJList(scrollPassengerMessages, listPassengerMessages, messages);
     }
 }

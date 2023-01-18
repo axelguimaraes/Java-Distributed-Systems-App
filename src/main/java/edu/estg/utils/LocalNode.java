@@ -1,6 +1,7 @@
 package edu.estg.utils;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class LocalNode {
     private String name;
@@ -52,5 +53,13 @@ public class LocalNode {
 
     public void addPassenger(Passenger passenger) {
         this.passengers.add(passenger);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LocalNode localNode = (LocalNode) o;
+        return Objects.equals(username, localNode.username);
     }
 }

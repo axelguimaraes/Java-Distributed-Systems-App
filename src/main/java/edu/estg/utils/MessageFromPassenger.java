@@ -3,15 +3,24 @@ package edu.estg.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PassengerMessage {
+public class MessageFromPassenger {
     private final String passenger;
     private final String message;
     private final String trainLine;
+    private final LocalNode localNode;
 
-    public PassengerMessage(String passenger, String message, String trainLine) {
+    public MessageFromPassenger(String passenger, String message, String trainLine) {
         this.passenger = passenger;
         this.message = message;
         this.trainLine = trainLine;
+        this.localNode = null;
+    }
+
+    public MessageFromPassenger(String passenger, String message, String trainLine, LocalNode localNode) {
+        this.passenger = passenger;
+        this.message = message;
+        this.trainLine = trainLine;
+        this.localNode = localNode;
     }
 
     public String getPassenger() {
@@ -26,7 +35,11 @@ public class PassengerMessage {
         return this.trainLine;
     }
 
-    public  TrainLine getTrainLineFromString(String string) {
+    public LocalNode getLocalNode() {
+        return this.localNode;
+    }
+
+    public static TrainLine getTrainLineFromString(String string) {
         TrainLine trainLine = null;
 
         String newString = string.replaceAll("\\s-\\s", " ");
@@ -44,5 +57,9 @@ public class PassengerMessage {
         }
 
         return trainLine;
+    }
+
+    public String toString() {
+        return this.trainLine + " :: " + this.message;
     }
 }

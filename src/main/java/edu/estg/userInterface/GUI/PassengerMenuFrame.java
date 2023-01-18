@@ -76,9 +76,10 @@ public class PassengerMenuFrame extends JFrame {
                 return;
             }
 
-            PassengerMessage passengerMessage = new PassengerMessage(this.passenger.getName(), sendMessageTextField.getText(), listLinesAssociated.getSelectedValue());
-            Request<PassengerMessage> request = new Request<>(RequestType.PASSENGER_MESSAGE_TO_NODE, passengerMessage);
-            this.client.sendMessage(this.jsonHelper.toJson(request)); // TODO: message not passing through local nodes
+            MessageFromPassenger messageFromPassenger = new MessageFromPassenger(this.passenger.getName(), sendMessageTextField.getText(), listLinesAssociated.getSelectedValue());
+            Request<MessageFromPassenger> request = new Request<>(RequestType.PASSENGER_MESSAGE_TO_NODE, messageFromPassenger);
+            this.client.sendMessage(this.jsonHelper.toJson(request));
+            sendMessageTextField.setText("");
         });
     }
 
@@ -92,29 +93,24 @@ public class PassengerMenuFrame extends JFrame {
     public void processMessage(String message, RequestType type) {
         switch (type) {
             case PASSENGER_MESSAGE_FROM_NODE:
-                PassengerMessage passengerMessage = this.jsonHelper.<Response<PassengerMessage>>fromJson(message, new TypeToken<Response<PassengerMessage>>() {
+                MessageToPassenger messageToPassenger = this.jsonHelper.<Response<MessageToPassenger>>fromJson(message, new TypeToken<Response<MessageToPassenger>>() {
                 }.getType()).getData();
 
-                boolean exists = false;
                 for (int i = 0; i < this.passenger.getAddedTrainLines().size(); i++) {
-                    if (this.passenger.getAddedTrainLines().get(i).equals(passengerMessage.getTrainLineFromString(passengerMessage.getTrainLine()))) {
-                        exists = true;
+                    for (int j = 0; j < messageToPassenger.getTrainLines().size(); j++) {
+                        if (this.passenger.getAddedTrainLines().get(i).equals(messageToPassenger.getTrainLines().get(j))) {
+
+                            LocalDateTime date = LocalDateTime.now();
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                            String formattedDate = date.format(formatter);
+
+                            String messageToShow = formattedDate + " :: " + messageToPassenger.getTrainLines().get(j) + "\n" + messageToPassenger.getMessage() + "\n\n";
+                            this.sendMessageTextField.setText("");
+
+                            messagesReceivedTextArea.setText(messagesReceivedTextArea.getText() + messageToShow);
+                        }
                     }
                 }
-
-                if (!exists) {
-                    break;
-                }
-
-                LocalDateTime date = LocalDateTime.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                String formattedDate = date.format(formatter);
-
-                String messageToShow = formattedDate + " :: " + passengerMessage.getTrainLine() + "\n" + passengerMessage.getPassenger() + " -> " + passengerMessage.getMessage() + "\n\n";
-                this.sendMessageTextField.setText("");
-
-                messagesReceivedTextArea.setText(messagesReceivedTextArea.getText() + messageToShow);
-                break;
         }
 
     }

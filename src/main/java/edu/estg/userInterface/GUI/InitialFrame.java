@@ -229,6 +229,7 @@ public class InitialFrame extends JFrame {
 
             // LOCAL NODE PROCESS RESPONSE
             case FEEDBACK_ADD_TRAIN_LINE:
+            case PASSENGER_MESSAGE_TO_NODE:
                 this.localNodeMenuFrame.processMessage(message, response.type);
                 break;
         }

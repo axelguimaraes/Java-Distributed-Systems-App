@@ -2,6 +2,7 @@ package edu.estg.userInterface;
 
 import com.google.gson.Gson;
 import edu.estg.*;
+import edu.estg.utils.Request;
 import edu.estg.utils.RequestType;
 import edu.estg.utils.Response;
 import edu.estg.utils.ResponseStatus;
@@ -69,6 +70,19 @@ public class Server {
             byte[] buf = messageToSend.getBytes();
             try {
                 datagramSocket.send(new DatagramPacket(buf, buf.length, InetAddress.getByName(PASSENGER_GROUP_IP), 4446));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }).start();
+    }
+
+    public void sendMulticastLocalNodeMessage(String messageToSend) {
+        new Thread(() -> {
+
+            byte[] buf = messageToSend.getBytes();
+            try {
+                datagramSocket.send(new DatagramPacket(buf, buf.length, InetAddress.getByName(LOCAL_NODE_GROUP_IP), 4446));
             } catch (IOException e) {
                 e.printStackTrace();
             }

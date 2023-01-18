@@ -26,6 +26,21 @@
             "end": "sintra"
           }
         ]
+      },
+      {
+        "name": "qweqwe",
+        "username": "qweqwe",
+        "password": "qweqwe",
+        "addedTrainLines": [
+          {
+            "beginning": "porto",
+            "end": "braga"
+          },
+          {
+            "beginning": "aveiro",
+            "end": "guimaraes"
+          }
+        ]
       }
     ],
     "trainLines": [
