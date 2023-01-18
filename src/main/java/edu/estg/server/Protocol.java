@@ -1,8 +1,7 @@
-package edu.estg;
+package edu.estg.server;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import edu.estg.userInterface.Server;
 import edu.estg.utils.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -10,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import static edu.estg.userInterface.Server.PASSENGER_GROUP_IP;
+import static edu.estg.server.Server.PASSENGER_GROUP_IP;
 
 public class Protocol {
     private final JsonFileHelper jsonFileHelper;

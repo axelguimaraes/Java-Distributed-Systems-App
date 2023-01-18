@@ -1,4 +1,4 @@
-package edu.estg;
+package edu.estg.server;
 
 import java.util.ArrayList;
 import java.util.Collection;

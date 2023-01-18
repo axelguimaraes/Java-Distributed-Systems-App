@@ -1,4 +1,4 @@
-package edu.estg;
+package edu.estg.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

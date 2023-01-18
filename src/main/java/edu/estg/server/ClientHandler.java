@@ -1,6 +1,4 @@
-package edu.estg;
-
-import edu.estg.userInterface.Server;
+package edu.estg.server;
 
 import java.io.*;
 import java.net.Socket;

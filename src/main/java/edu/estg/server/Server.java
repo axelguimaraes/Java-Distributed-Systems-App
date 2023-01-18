@@ -1,8 +1,6 @@
-package edu.estg.userInterface;
+package edu.estg.server;
 
 import com.google.gson.Gson;
-import edu.estg.*;
-import edu.estg.utils.Request;
 import edu.estg.utils.RequestType;
 import edu.estg.utils.Response;
 import edu.estg.utils.ResponseStatus;
