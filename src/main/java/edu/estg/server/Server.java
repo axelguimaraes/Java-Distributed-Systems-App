@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import edu.estg.utils.RequestType;
 import edu.estg.utils.Response;
 import edu.estg.utils.ResponseStatus;
-
 import java.io.IOException;
 import java.net.*;
 import java.util.Scanner;
@@ -26,9 +25,11 @@ public class Server {
     }
 
     public void startServer() {
+        System.out.println("Central node is online!");
         try {
             while (true) {
                 Socket socket = serverSocket.accept();
+                System.out.println("New client connected! -> " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 
                 new Thread(new ClientHandler(clientHandlers, socket, this)).start();
             }
@@ -44,22 +45,6 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void sendMulticastMessage() {
-        new Thread(() -> {
-            while (true) {
-                System.out.print("Multicast message: ");
-                String message = this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.MULTICAST_MESSAGE, new Scanner(System.in).nextLine()));
-
-                byte[] buf = message.getBytes();
-                try {
-                    datagramSocket.send(new DatagramPacket(buf, buf.length, InetAddress.getByName(MAIN_GROUP_IP), 4446));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     public void sendMulticastPassengerMessage(String messageToSend) {
@@ -91,7 +76,6 @@ public class Server {
     public static void main(String[] args) throws IOException {
         DatagramSocket datagramSocket = new DatagramSocket(4445);
         Server server = new Server(new ServerSocket(2048), datagramSocket);
-        server.sendMulticastMessage();
         server.startServer();
     }
 
