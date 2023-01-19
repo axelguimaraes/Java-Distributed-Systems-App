@@ -3,8 +3,6 @@ package edu.estg.server;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.estg.utils.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -14,18 +12,14 @@ import static edu.estg.server.Server.PASSENGER_GROUP_IP;
 public class Protocol {
     private final JsonFileHelper jsonFileHelper;
     private final Gson jsonHelper;
-    private final ArrayListSync<ClientHandler> clientHandlers;
     private final ClientHandler clientHandler;
     protected Server server;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    public Protocol(ClientHandler clientHandler, ArrayListSync<ClientHandler> clientHandlers, Server server) throws IOException {
+    public Protocol(ClientHandler clientHandler, Server server) throws IOException {
         this.clientHandler = clientHandler;
         this.server = server;
-        this.clientHandlers = clientHandlers;
         this.jsonHelper = new Gson();
         this.jsonFileHelper = new JsonFileHelper("files/");
-        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     protected synchronized String processMessage(String requestMessage) {

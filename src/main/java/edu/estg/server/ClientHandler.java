@@ -17,7 +17,7 @@ public class ClientHandler implements Runnable {
            this.socket = socket;
            this.server = server;
            this.clientHandlers = clientHandlers;
-           this.protocol = new Protocol(this, clientHandlers, server);
+           this.protocol = new Protocol(this, server);
            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
            this.clientHandlers.add(this);

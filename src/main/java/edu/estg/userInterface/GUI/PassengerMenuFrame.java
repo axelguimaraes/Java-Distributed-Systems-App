@@ -80,6 +80,7 @@ public class PassengerMenuFrame extends JFrame {
             Request<MessageFromPassenger> request = new Request<>(RequestType.PASSENGER_MESSAGE_TO_NODE, messageFromPassenger);
             this.client.sendMessage(this.jsonHelper.toJson(request));
             sendMessageTextField.setText("");
+            listLinesAssociated.clearSelection();
         });
     }
 

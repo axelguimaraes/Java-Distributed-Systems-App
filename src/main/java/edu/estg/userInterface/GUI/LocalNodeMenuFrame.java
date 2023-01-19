@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -84,6 +85,11 @@ public class LocalNodeMenuFrame extends JFrame {
 
         sendMessageToPassengersButton.addActionListener(e -> {
             String message = JOptionPane.showInputDialog("Message:");
+            if (Objects.equals(message, "")) {
+                showMessageDialog(new JFrame(), "Please write a message!", "", ERROR_MESSAGE);
+                return;
+            }
+
             if (linesList.isSelectionEmpty()) {
                 showMessageDialog(new JFrame(), "Please select the affected line!","", ERROR_MESSAGE);
                 return;
@@ -98,6 +104,7 @@ public class LocalNodeMenuFrame extends JFrame {
 
             Request<MessageToPassenger> request = new Request<>(RequestType.PASSENGER_MESSAGE_FROM_NODE, messageToPassenger);
             this.client.sendMessage(this.jsonHelper.toJson(request));
+            linesList.clearSelection();
         });
     }
 
