@@ -29,10 +29,11 @@ public class LocalNodeMenuFrame extends JFrame {
     private JScrollPane scrollPassengerMessages;
     private final Gson jsonHelper;
     private final LocalNode localNode;
-    private ArrayList<String> trainLines;
+    private final ArrayList<String> trainLines;
     private final Client client;
     private final InitialFrame initialFrame;
-    private ArrayList<MessageFromPassenger> messageFromPassengers;
+    private final ArrayList<MessageFromPassenger> messageFromPassengers;
+    private int messagesSent, passengersNotified;
 
     public LocalNodeMenuFrame(InitialFrame initialFrame, Client client, LocalNode localNode) {
         setContentPane(mainPanel);
@@ -41,6 +42,7 @@ public class LocalNodeMenuFrame extends JFrame {
         this.initialFrame = initialFrame;
         this.client = client;
         this.localNode = localNode;
+        this.messagesSent = this.passengersNotified = 0;
         this.messageFromPassengers = new ArrayList<>();
         this.nameLabel.setText("Local node: " + this.localNode.getName());
         this.trainLines = this.localNode.getTrainLinesStringList();
@@ -91,7 +93,7 @@ public class LocalNodeMenuFrame extends JFrame {
             }
 
             if (linesList.isSelectionEmpty()) {
-                showMessageDialog(new JFrame(), "Please select the affected line!","", ERROR_MESSAGE);
+                showMessageDialog(new JFrame(), "Please select the affected line!", "", ERROR_MESSAGE);
                 return;
             }
 
@@ -105,6 +107,7 @@ public class LocalNodeMenuFrame extends JFrame {
             Request<MessageToPassenger> request = new Request<>(RequestType.PASSENGER_MESSAGE_FROM_NODE, messageToPassenger);
             this.client.sendMessage(this.jsonHelper.toJson(request));
             linesList.clearSelection();
+            this.messagesSent++;
         });
     }
 
@@ -132,9 +135,37 @@ public class LocalNodeMenuFrame extends JFrame {
                 if (!(messageFromPassenger.getLocalNode().equals(this.localNode))) {
                     break;
                 }
-
                 messageFromPassengers.add(messageFromPassenger);
                 configPassengerMessagesList();
+                break;
+
+            case STATISTICS_REQUEST:
+                ArrayList<TrainLine> trainLinesArray = new ArrayList<>();
+                for (String trainLine : this.trainLines) {
+                    trainLinesArray.add(InitialFrame.getTrainLineFromString(trainLine));
+                }
+
+                LocalNodeStatisticsRequestToPassengers localNodeRequest = new LocalNodeStatisticsRequestToPassengers(trainLinesArray);
+                Request<Object> request = new Request<>(RequestType.LOCAL_NODE_STATISTICS_REQUEST_TO_PASSENGERS, localNodeRequest);
+                this.client.sendMessage(this.jsonHelper.toJson(request));
+                break;
+
+            case LOCAL_NODE_STATISTICS_RESPONSE_FROM_PASSENGERS:
+                LocalNodeStatisticsResponseFromPassengers response = this.jsonHelper.<Response<LocalNodeStatisticsResponseFromPassengers>>fromJson(message, new TypeToken<Response<LocalNodeStatisticsResponseFromPassengers>>() {
+                }.getType()).getData();
+
+                if (!this.localNode.getPassengers().contains(response.getPassenger())) {
+                    break;
+                }
+
+                // TODO: is incrementing here
+                this.passengersNotified++;
+                this.messagesSent += response.getMessagesReceived();
+
+                LocalNodeStatistics localNodeStatistics = new LocalNodeStatistics(this.localNode.getName(), this.messagesSent, this.passengersNotified);
+                Request<LocalNodeStatistics> statisticsResponse = new Request<>(RequestType.STATISTICS_RESPONSE, localNodeStatistics);
+                this.client.sendMessage(this.jsonHelper.toJson(statisticsResponse));
+                break;
         }
     }
 

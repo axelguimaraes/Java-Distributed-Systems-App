@@ -2,14 +2,12 @@ package edu.estg.utils;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Passenger {
     private final String name;
     private final String username;
     private final String password;
-    private ArrayList<TrainLine> addedTrainLines;
+    private final ArrayList<TrainLine> addedTrainLines;
 
     public Passenger(String name, String username, String password, ArrayList<TrainLine> addedTrainLines) {
         this.name = name;

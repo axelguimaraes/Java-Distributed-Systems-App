@@ -3,6 +3,7 @@ package edu.estg.server;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.estg.utils.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -26,11 +27,13 @@ public class Protocol {
         RequestType requestType;
         ArrayList<LocalNode> currentLocalNodes;
         ArrayList<Passenger> currentPassengers;
+        ArrayList<LocalNodeStatistics> currentLocalNodeStatistics;
 
         try {
             requestType = this.jsonHelper.fromJson(requestMessage, Request.class).getType();
             currentLocalNodes = this.jsonFileHelper.getLocalNodes();
             currentPassengers = this.jsonFileHelper.getPassengers();
+            currentLocalNodeStatistics = this.jsonFileHelper.getLocalNodeStatistics();
         } catch (IOException e) {
             return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unexpected error while registering!"));
         }
@@ -52,6 +55,12 @@ public class Protocol {
                 return sendPassengerMessageToNodeHelper(requestMessage, currentLocalNodes);
             case PASSENGER_MESSAGE_FROM_NODE:
                 return sendPassengerMessageFromNodeHelper(requestMessage);
+            case LOCAL_NODE_STATISTICS_REQUEST_TO_PASSENGERS:
+                return localNodeStatisticsRequestToPassengers(requestMessage);
+            case LOCAL_NODE_STATISTICS_RESPONSE_FROM_PASSENGERS:
+                return localNodeStatisticsResponseFromPassengers(requestMessage);
+            case STATISTICS_RESPONSE:
+                return statisticsResponseHelper(requestMessage, currentLocalNodeStatistics);
             default:
                 return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unsupported request!"));
         }
@@ -212,9 +221,7 @@ public class Protocol {
         MessageFromPassenger newMessageFromPassenger = new MessageFromPassenger(messageFromPassenger.getPassenger(), messageFromPassenger.getMessage(), messageFromPassenger.getTrainLine(), localNode);
 
         server.sendMulticastLocalNodeMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_TO_NODE, newMessageFromPassenger)));
-        //server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_TO_NODE, newPassengerMessage)));
-
-        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.SOMETHING));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK, "Message sent!"));
     }
 
     private String sendPassengerMessageFromNodeHelper(String requestMessage) {
@@ -222,6 +229,51 @@ public class Protocol {
         }.getType()).getData();
 
         server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.PASSENGER_MESSAGE_FROM_NODE, messageToPassenger)));
-        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.SOMETHING));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK, "Message sent!"));
+    }
+
+    private String localNodeStatisticsRequestToPassengers(String requestMessage) {
+        LocalNodeStatisticsRequestToPassengers request = this.jsonHelper.<Request<LocalNodeStatisticsRequestToPassengers>>fromJson(requestMessage, new TypeToken<Request<LocalNodeStatisticsRequestToPassengers>>() {
+        }.getType()).getData();
+
+        server.sendMulticastPassengerMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.LOCAL_NODE_STATISTICS_REQUEST_TO_PASSENGERS, request)));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK, "Request sent!"));
+    }
+
+    private String localNodeStatisticsResponseFromPassengers(String requestMessage) {
+        LocalNodeStatisticsResponseFromPassengers request = this.jsonHelper.<Request<LocalNodeStatisticsResponseFromPassengers>>fromJson(requestMessage, new TypeToken<Request<LocalNodeStatisticsResponseFromPassengers>>() {
+        }.getType()).getData();
+
+        server.sendMulticastLocalNodeMessage(this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.LOCAL_NODE_STATISTICS_RESPONSE_FROM_PASSENGERS, request)));
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK, "Response sent"));
+    }
+
+    private String statisticsResponseHelper(String requestMessage, ArrayList<LocalNodeStatistics> currentLocalNodeStatistics) {
+        LocalNodeStatistics localNodeStatistics = this.jsonHelper.<Request<LocalNodeStatistics>>fromJson(requestMessage, new TypeToken<Request<LocalNodeStatistics>>() {
+        }.getType()).getData();
+
+        //currentLocalNodeStatistics.add(localNodeStatistics);
+
+        boolean found = false;
+        for (int i = 0; i < currentLocalNodeStatistics.size(); i++) {
+            if (currentLocalNodeStatistics.get(i).getLocalNode().equals(localNodeStatistics.getLocalNode())) {
+                currentLocalNodeStatistics.set(i, localNodeStatistics);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            currentLocalNodeStatistics.add(localNodeStatistics);
+        }
+
+        try {
+            jsonFileHelper.updateLocalNodeStatistics(currentLocalNodeStatistics);
+        } catch (IOException e) {
+            return this.jsonHelper.toJson(new Response<>(ResponseStatus.NOT_OK, "Unexpected error saving changes!"));
+        }
+        server.localNodeStatistics = currentLocalNodeStatistics;
+        //server.semaphore.release();
+
+        return this.jsonHelper.toJson(new Response<>(ResponseStatus.OK, RequestType.FEEDBACK, "Response received!"));
     }
 }

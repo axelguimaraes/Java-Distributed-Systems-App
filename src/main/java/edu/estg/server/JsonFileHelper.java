@@ -3,6 +3,7 @@ package edu.estg.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.estg.utils.LocalNode;
+import edu.estg.utils.LocalNodeStatistics;
 import edu.estg.utils.Passenger;
 import edu.estg.utils.TrainLine;
 
@@ -74,6 +75,14 @@ public class JsonFileHelper {
 
     public synchronized ArrayList<TrainLine> getTrainLines() throws IOException {
         return new ArrayList<>(deserializeArray("trainLines", TrainLine[].class));
+    }
+
+    public synchronized void updateLocalNodeStatistics(ArrayList<LocalNodeStatistics> localNodeStatistics) throws IOException {
+        serialize("localNodeStatistics", new HashSet<>(localNodeStatistics));
+    }
+
+    public synchronized ArrayList<LocalNodeStatistics> getLocalNodeStatistics() throws IOException {
+        return new ArrayList<>(deserializeArray("localNodeStatistics", LocalNodeStatistics[].class));
     }
 
 }

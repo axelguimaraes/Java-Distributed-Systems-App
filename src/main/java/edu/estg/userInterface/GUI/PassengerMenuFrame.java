@@ -29,10 +29,12 @@ public class PassengerMenuFrame extends JFrame {
     private final Passenger passenger;
     private final Client client;
     private final InitialFrame initialFrame;
+    private int messagesReceived;
 
     public PassengerMenuFrame(InitialFrame initialFrame, Client client, Passenger passenger) {
         setContentPane(mainPanel);
 
+        this.messagesReceived = 0;
         this.jsonHelper = new Gson();
         this.initialFrame = initialFrame;
         this.client = client;
@@ -109,9 +111,31 @@ public class PassengerMenuFrame extends JFrame {
                             this.sendMessageTextField.setText("");
 
                             messagesReceivedTextArea.setText(messagesReceivedTextArea.getText() + messageToShow);
+                            this.messagesReceived++;
                         }
                     }
                 }
+                break;
+
+            case LOCAL_NODE_STATISTICS_REQUEST_TO_PASSENGERS:
+                LocalNodeStatisticsRequestToPassengers response = this.jsonHelper.<Response<LocalNodeStatisticsRequestToPassengers>>fromJson(message, new TypeToken<Response<LocalNodeStatisticsRequestToPassengers>>() {
+                }.getType()).getData();
+
+                boolean contains = false;
+                for (int i = 0; i < this.passenger.getAddedTrainLines().size(); i++) {
+                    for (int j = 0; j < response.getTrainLines().size(); j++) {
+                        if (this.passenger.getAddedTrainLines().get(i).equals(response.getTrainLines().get(j))) {
+                            contains = true;
+                        }
+                    }
+                }
+
+                if (!contains) {
+                    return;
+                }
+                LocalNodeStatisticsResponseFromPassengers statistics = new LocalNodeStatisticsResponseFromPassengers(this.passenger, this.messagesReceived);
+                Request<LocalNodeStatisticsResponseFromPassengers> request = new Request<>(RequestType.LOCAL_NODE_STATISTICS_RESPONSE_FROM_PASSENGERS, statistics);
+                this.client.sendMessage(this.jsonHelper.toJson(request));
         }
 
     }

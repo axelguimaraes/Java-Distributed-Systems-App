@@ -214,10 +214,6 @@ public class InitialFrame extends JFrame {
                 tabbedPane.setSelectedIndex(0);
                 cleanVariables();
                 break;
-            case MULTICAST_MESSAGE:
-                System.out.println("BROADCAST_MESSAGE");
-                showMessageDialog(null, response.message, "Broadcast message", WARNING_MESSAGE);
-                break;
 
             case GET_CURRENT_LOCAL_NODES:
                 this.currentLocalNodes = this.jsonHelper.<Response<ArrayList<LocalNode>>>fromJson(message, new TypeToken<Response<ArrayList<LocalNode>>>() {
@@ -228,12 +224,15 @@ public class InitialFrame extends JFrame {
             // PASSENGER PROCESS RESPONSE
             case ASSOCIATE_TRAIN_LINE:
             case PASSENGER_MESSAGE_FROM_NODE:
+            case LOCAL_NODE_STATISTICS_REQUEST_TO_PASSENGERS:
                 this.passengerMenuFrame.processMessage(message, response.type);
                 break;
 
             // LOCAL NODE PROCESS RESPONSE
             case FEEDBACK_ADD_TRAIN_LINE:
             case PASSENGER_MESSAGE_TO_NODE:
+            case STATISTICS_REQUEST:
+            case LOCAL_NODE_STATISTICS_RESPONSE_FROM_PASSENGERS:
                 this.localNodeMenuFrame.processMessage(message, response.type);
                 break;
         }
@@ -270,7 +269,7 @@ public class InitialFrame extends JFrame {
         scrollPane.setViewportView(list);
     }
 
-    private static TrainLine getTrainLineFromString(String string) {
+    public static TrainLine getTrainLineFromString(String string) {
         TrainLine trainLine = null;
 
         String newString = string.replaceAll("\\s-\\s", " ");
