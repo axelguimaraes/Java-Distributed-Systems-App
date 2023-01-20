@@ -1,24 +1,25 @@
 package edu.estg.userInterface;
 
-import com.google.gson.Gson;
-import edu.estg.Menu;
+import edu.estg.userInterface.GUI.InitialFrame;
 
 import java.io.*;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetConnectedException;
+import java.util.ArrayList;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
+
 public class Client {
-    private MulticastSocket multicastSocket;
+    private final MulticastSocket multicastSocket;
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    // private StartFrame;
-    private final Gson jsonHelper = new Gson();
+    private final InitialFrame initialFrame;
 
     public Client(MulticastSocket multicastSocket, String host, int port) {
         try {
@@ -26,11 +27,23 @@ public class Client {
             this.multicastSocket = multicastSocket;
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            this.initialFrame = new InitialFrame(this);
+            initialFrame.configFrame();
+
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
             throw new NotYetConnectedException();
         }
     }
+
+    public void joinGroups(ArrayList<String> ips) throws IOException {
+        System.out.println("JOIN GROUPS IP -> " + ips);
+        for (String ip : ips) {
+            this.multicastSocket.joinGroup(InetAddress.getByName(ip));
+        }
+    }
+
     public void sendMessage(String message) {
         new Thread(() -> {
             if (message != null) {
@@ -49,11 +62,13 @@ public class Client {
         new Thread(() -> {
             while (true) {
                 try {
-                    byte[] buf = new byte[256];
+                    byte[] buf = new byte[1024];
                     DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length);
                     multicastSocket.receive(datagramPacket);
 
                     String received = new String(datagramPacket.getData(), datagramPacket.getOffset(), datagramPacket.getLength());
+
+                    this.initialFrame.processResponse(received);
 
                     System.out.println("MULTICAST -> " + received);
 
@@ -74,6 +89,9 @@ public class Client {
 
                     if (responseMessage == null)
                         closeEverything(socket, bufferedReader, bufferedWriter);
+
+                    this.initialFrame.processResponse(responseMessage);
+
                     System.out.println(responseMessage);
 
                 } catch (IOException e) {
@@ -103,15 +121,9 @@ public class Client {
 
             client.receiveMessages();
             client.receiveMessagesMulticast();
-            Menu menu = new Menu(client);
-            menu.startMenu();
 
         } catch (NotYetConnectedException | IOException e) {
-            showMessageDialog(null, "Sem conexão", "", ERROR_MESSAGE);
+            showMessageDialog(null, "Unable to connect to server!", "", ERROR_MESSAGE);
         }
-    }
-
-    public Socket getSocket() {
-        return this.socket;
     }
 }

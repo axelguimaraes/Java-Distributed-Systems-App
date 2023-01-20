@@ -1,5 +1,7 @@
 package edu.estg.utils;
 
+import java.util.ArrayList;
+
 public class PassengerRegister {
     private Passenger passenger;
 
@@ -8,6 +10,6 @@ public class PassengerRegister {
     }
 
     public Passenger getPassenger() {
-        return passenger;
+        return this.passenger;
     }
 }

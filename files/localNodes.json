@@ -1,9 +1,45 @@
 [
   {
-    "name": "qwe",
-    "username": "qwe",
-    "password": "qwe",
-    "passengers": [],
-    "trainLines": []
+    "name": "node1",
+    "username": "node1",
+    "password": "$argon2id$v\u003d19$m\u003d15360,t\u003d2,p\u003d1$$5uTuHzGrQDoRuNwNUztsZ/6VQEOkNlS5sp4KCuS3pHk",
+    "passengers": [
+      {
+        "name": "passenger1",
+        "username": "passenger1",
+        "password": "$argon2id$v\u003d19$m\u003d15360,t\u003d2,p\u003d1$$izhQYOYZkdm2DgXvtXJ+Z1nnNAd2iKPKaiv0dbK7zd0",
+        "addedTrainLines": [
+          {
+            "beginning": "porto",
+            "end": "braga"
+          }
+        ]
+      },
+      {
+        "name": "passenger2",
+        "username": "passenger2",
+        "password": "$argon2id$v\u003d19$m\u003d15360,t\u003d2,p\u003d1$$QC6jvWT1EamM+Pfu+AZl3ZNuH/QVB1DV2b54VXiaWLQ",
+        "addedTrainLines": [
+          {
+            "beginning": "porto",
+            "end": "braga"
+          },
+          {
+            "beginning": "porto",
+            "end": "aveiro"
+          }
+        ]
+      }
+    ],
+    "trainLines": [
+      {
+        "beginning": "porto",
+        "end": "braga"
+      },
+      {
+        "beginning": "porto",
+        "end": "aveiro"
+      }
+    ]
   }
 ]

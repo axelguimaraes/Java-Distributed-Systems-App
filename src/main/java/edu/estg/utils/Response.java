@@ -42,5 +42,7 @@ public class Response<T> {
         return this.data;
     }
 
-
+    public ResponseStatus getStatus() {
+        return this.status;
+    }
 }
