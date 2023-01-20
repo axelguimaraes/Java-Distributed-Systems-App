@@ -1,7 +1,7 @@
 [
   {
     "localNodeName": "node1",
-    "messagesSent": 0,
-    "passengersNotified": 1
+    "messagesSent": 3,
+    "passengersNotified": 12
   }
 ]

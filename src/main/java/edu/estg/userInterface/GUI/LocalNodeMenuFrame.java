@@ -33,7 +33,7 @@ public class LocalNodeMenuFrame extends JFrame {
     private final Client client;
     private final InitialFrame initialFrame;
     private final ArrayList<MessageFromPassenger> messageFromPassengers;
-    private int messagesSent, passengersNotified;
+    private int messagesSent, passengersNotified, modCount;
 
     public LocalNodeMenuFrame(InitialFrame initialFrame, Client client, LocalNode localNode) {
         setContentPane(mainPanel);
@@ -42,7 +42,7 @@ public class LocalNodeMenuFrame extends JFrame {
         this.initialFrame = initialFrame;
         this.client = client;
         this.localNode = localNode;
-        this.messagesSent = this.passengersNotified = 0;
+        this.messagesSent = this.passengersNotified = this.modCount = 0;
         this.messageFromPassengers = new ArrayList<>();
         this.nameLabel.setText("Local node: " + this.localNode.getName());
         this.trainLines = this.localNode.getTrainLinesStringList();
@@ -159,8 +159,11 @@ public class LocalNodeMenuFrame extends JFrame {
                 }
 
                 // TODO: is incrementing here
-                this.passengersNotified++;
-                this.messagesSent += response.getMessagesReceived();
+                if (this.modCount == response.getMessagesReceived()) {
+                } else {
+                    this.passengersNotified++;
+                    this.modCount = this.passengersNotified;
+                }
 
                 LocalNodeStatistics localNodeStatistics = new LocalNodeStatistics(this.localNode.getName(), this.messagesSent, this.passengersNotified);
                 Request<LocalNodeStatistics> statisticsResponse = new Request<>(RequestType.STATISTICS_RESPONSE, localNodeStatistics);

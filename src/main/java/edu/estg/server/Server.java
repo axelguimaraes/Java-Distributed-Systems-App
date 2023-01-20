@@ -92,8 +92,13 @@ public class Server {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                for (LocalNodeStatistics localNodeStatistic : this.localNodeStatistics) {
-                    System.out.println("\nStatistics:\n" + localNodeStatistic + "\n");
+
+                if (!this.localNodeStatistics.isEmpty()) {
+                    for (LocalNodeStatistics localNodeStatistic : this.localNodeStatistics) {
+                        System.out.println("\nStatistics:\n" + localNodeStatistic + "\n");
+                    }
+                } else {
+                    System.out.println("\nStatistics:\nNothing to show.\n");
                 }
             }
 

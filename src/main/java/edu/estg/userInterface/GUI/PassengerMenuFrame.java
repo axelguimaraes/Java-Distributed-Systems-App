@@ -29,12 +29,12 @@ public class PassengerMenuFrame extends JFrame {
     private final Passenger passenger;
     private final Client client;
     private final InitialFrame initialFrame;
-    private int messagesReceived;
+    private int messagesReceived, modCount;
 
     public PassengerMenuFrame(InitialFrame initialFrame, Client client, Passenger passenger) {
         setContentPane(mainPanel);
 
-        this.messagesReceived = 0;
+        this.messagesReceived = this.modCount = 0;
         this.jsonHelper = new Gson();
         this.initialFrame = initialFrame;
         this.client = client;
@@ -133,6 +133,15 @@ public class PassengerMenuFrame extends JFrame {
                 if (!contains) {
                     return;
                 }
+
+                int numberOfNewMessages;
+                if (this.modCount == this.messagesReceived) {
+                    numberOfNewMessages = 0;
+                } else {
+                    numberOfNewMessages = this.messagesReceived - this.modCount;
+                    this.modCount = this.messagesReceived;
+                }
+
                 LocalNodeStatisticsResponseFromPassengers statistics = new LocalNodeStatisticsResponseFromPassengers(this.passenger, this.messagesReceived);
                 Request<LocalNodeStatisticsResponseFromPassengers> request = new Request<>(RequestType.LOCAL_NODE_STATISTICS_RESPONSE_FROM_PASSENGERS, statistics);
                 this.client.sendMessage(this.jsonHelper.toJson(request));
