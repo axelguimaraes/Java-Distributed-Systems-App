@@ -82,7 +82,7 @@ public class Server {
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(5000); // Sleep 30 seconds
+                    Thread.sleep(30000); // Sleep 30 seconds
 
                     System.out.println("STATISTICS");
                     Response<Object> response = new Response<>(ResponseStatus.OK, RequestType.STATISTICS_REQUEST);

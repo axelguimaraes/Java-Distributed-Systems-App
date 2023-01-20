@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class LocalNode {
-    private String name;
-    private String username;
-    private String password;
-    private ArrayList<Passenger> passengers;
-    private ArrayList<TrainLine> trainLines;
+    private final String name;
+    private final String username;
+    private final String password;
+    private final ArrayList<Passenger> passengers;
+    private final ArrayList<TrainLine> trainLines;
 
     public LocalNode(String name, String username, String password) {
         this.name = name;
@@ -40,8 +40,8 @@ public class LocalNode {
 
     public ArrayList<String> getTrainLinesStringList() {
         ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < this.trainLines.size(); i++) {
-            list.add(this.trainLines.get(i).toString());
+        for (TrainLine trainLine : this.trainLines) {
+            list.add(trainLine.toString());
         }
 
         return list;

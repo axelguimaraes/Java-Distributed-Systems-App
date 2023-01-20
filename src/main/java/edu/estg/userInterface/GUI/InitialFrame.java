@@ -153,7 +153,7 @@ public class InitialFrame extends JFrame {
                 dispose();
             }
         });
-        setPreferredSize(new Dimension(600, 500));
+        setPreferredSize(new Dimension(700, 500));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         pack();
